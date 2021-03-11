@@ -1,2 +1,2 @@
 # Boni-Pi
-Boni bot but may be better.
+Boni bot but may be better
