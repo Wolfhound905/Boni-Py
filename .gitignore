@@ -3,4 +3,5 @@
 
 #ignore this stuff that is just extra things 👍
 /behaviors/__pycache__
+/__pycache__
 .vscode
