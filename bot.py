@@ -11,8 +11,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix="/")
 slash = SlashCommand(bot, sync_commands=True, override_type = True)
 
-bot.load_extension("cog")
-bot.load_extension("createVC")
+# bot.load_extension("behaviors.cog")
+bot.load_extension("behaviors.createVC")
 
 
 @bot.event

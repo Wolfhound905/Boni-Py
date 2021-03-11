@@ -1,5 +1,6 @@
 #Ignore the env
 .env
 
-#ignore whatever this is 👍
-/__pycache__
+#ignore this stuff that is just extra things 👍
+/behaviors/__pycache__
+.vscode
