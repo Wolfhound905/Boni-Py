@@ -1,2 +1,2 @@
 # Boni-Py
-Boni bot but may be better
+Boni bot but he is coded in python and uses slash commands!
