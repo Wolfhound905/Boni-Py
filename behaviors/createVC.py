@@ -31,8 +31,7 @@ class CreateVC(commands.Cog):
             await ctx.respond(await ctx.send_hidden("You need to be in Mouth Chat to use this command."))
         else:
             guild = ctx.guild
-            category = uti
-            channel = await guild.create_voice_channel(channel_name, category=, user_limit=member_cap)
+            channel = await guild.create_voice_channel(channel_name, user_limit=member_cap)
             await ctx.send(f"I created the voice channel `{channel_name}`!")
             await ctx.author.move_to(channel=channel)
             print(voice_state)

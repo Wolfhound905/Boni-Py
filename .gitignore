@@ -1,6 +1,6 @@
 #Ignore the env
 .env
-
+startup.sh
 #ignore this stuff that is just extra things 👍
 /behaviors/__pycache__
 /__pycache__
