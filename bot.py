@@ -14,20 +14,11 @@ activity = discord.Activity(name='to my creator', type=discord.ActivityType.list
 
 
 bot.load_extension("behaviors.clubMatches")
-bot.load_extension("behaviors.createVC")
-bot.load_extension("behaviors.help")
-bot.load_extension("behaviors.copyCat")
+# bot.load_extension("behaviors.createVC")
+# bot.load_extension("behaviors.help")
+# bot.load_extension("behaviors.copyCat")
+bot.load_extension("behaviors.getGuilds")
 
-global guilds
-guilds = []
-
-def get_guilds():
-  for guild in bot.guilds:
-    global guilds
-    guilds.append(guild.id)
-  print(guilds)
-  
-  
 @bot.event
 async def on_ready():
     print("ready")
@@ -36,7 +27,7 @@ async def on_ready():
     await bot.change_presence(activity=activity)
     for key in commands:
         print(commands[key].name)
-    get_guilds()
+    
 
 #  ---------------Events-------------------
 
