@@ -23,7 +23,5 @@ async def on_ready():
     print("commands".center(20, "#"))
     for key in commands:
         print(commands[key].name)
-    #await slash.sync_all_commands()
-
 
 bot.run(TOKEN)
