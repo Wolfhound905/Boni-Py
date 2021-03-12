@@ -13,6 +13,7 @@ slash = SlashCommand(bot, sync_commands=True, override_type = True)
 
 bot.load_extension("behaviors.clubMatches")
 bot.load_extension("behaviors.createVC")
+bot.load_extension("behaviors.help")
 
 
 @bot.event
