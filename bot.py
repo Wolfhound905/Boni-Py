@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 
 load_dotenv()
+GUILD_ID = os.getenv('GUILD_ID')
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix="/")

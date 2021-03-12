@@ -1,7 +1,11 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+import os 
+from dotenv import load_dotenv
 
+load_dotenv()
+GUILD_ID = int(os.getenv('GUILD_ID'))
 
 class CreateVC(commands.Cog):
     def __init__(self, bot):
@@ -21,7 +25,7 @@ class CreateVC(commands.Cog):
             "required":False
         }
     ]
-    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [443884809484238848, 610818618325729281])
+    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [GUILD_ID])
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
         voice_state = ctx.author.voice
         if voice_state == None:
