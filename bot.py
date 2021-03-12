@@ -28,9 +28,5 @@ async def on_ready():
     for key in commands:
         print(commands[key].name)
 
-@bot.event
-async def on_member_join(member):
-  channel = random.choice(member.guild.channels)
-  await channel.send(f'wassup {member.mention}')  
 
 bot.run(TOKEN)

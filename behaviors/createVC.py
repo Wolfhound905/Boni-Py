@@ -22,10 +22,15 @@ class CreateVC(commands.Cog):
     ]
     @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [443884809484238848])
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
-        
-        guild = ctx.guild
-        channel = await guild.create_voice_channel(channel_name, user_limit=member_cap)
-        await ctx.send(f"I created the voice channel `{channel_name}`!")
+        voice_state = ctx.author.voice
+        if voice_state == None:
+            await ctx.respond(await ctx.send_hidden("You need to be in Mouth Chat to use this command."))
+        else:
+            guild = ctx.guild
+            await guild.create_voice_channel(channel_name, user_limit=member_cap)
+            await ctx.send(f"I created the voice channel `{channel_name}`!")
+            channel = 
+            await ctx.author.move_to(channel=channel)
 
 def setup(bot):
     bot.add_cog(CreateVC(bot))
