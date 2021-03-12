@@ -28,5 +28,14 @@ async def on_ready():
     for key in commands:
         print(commands[key].name)
 
+@bot.event
+async def on_voice_state_update(member, before, after):
+  if before.channel is not None:
+   if before.channel.id != 610818618325729285: # DO NOT REMOVE!!!!!
+    if len(before.channel.members) == 0:
+      print("channel is now empty")
+      await before.channel.delete()
+  
+  
 
 bot.run(TOKEN)
