@@ -6,7 +6,6 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 
 load_dotenv()
-GUILD_ID = os.getenv('GUILD_ID')
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix="/")
@@ -19,7 +18,16 @@ bot.load_extension("behaviors.createVC")
 bot.load_extension("behaviors.help")
 bot.load_extension("behaviors.copyCat")
 
+global guilds
+guilds = []
 
+def get_guilds():
+  for guild in bot.guilds:
+    global guilds
+    guilds.append(guild.id)
+  print(guilds)
+  
+  
 @bot.event
 async def on_ready():
     print("ready")
@@ -28,7 +36,7 @@ async def on_ready():
     await bot.change_presence(activity=activity)
     for key in commands:
         print(commands[key].name)
-
+    get_guilds()
 
 #  ---------------Events-------------------
 
