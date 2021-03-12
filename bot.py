@@ -41,4 +41,6 @@ async def on_voice_state_update(member, before, after):
         print("channel is now empty")
         await before.channel.delete()
   
+
+  
 bot.run(TOKEN)
