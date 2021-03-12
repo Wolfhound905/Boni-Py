@@ -12,7 +12,7 @@ class clubMatches(commands.Cog):
       win_messages = [
         "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!", 
         "I wanna grow up to slam as hard as you guys one day!", "They won’t forget the day they lost to the Slambonis!", 
-        "Do you think we should go pro?"
+        "Do you think we should go pro?", "RLCS here we come!"
         ]
       loss_messages = [
         "Aw man…", "I still think we’re the best club around!", "At least we had fun",
