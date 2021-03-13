@@ -1,7 +1,11 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+guilds = int(os.getenv('GUILD_ID'))
 
 global NewId
 NewId = []

@@ -7,6 +7,7 @@ from discord_slash import SlashCommand, SlashContext
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+guilds = int(os.getenv('GUILD_ID'))
 
 bot = commands.Bot(command_prefix="/")
 slash = SlashCommand(bot, sync_commands=True, override_type = True)
@@ -27,7 +28,7 @@ async def on_ready():
     await bot.change_presence(activity=activity)
     for key in commands:
         print(commands[key].name)
-
+    print(guilds)
 
 #  ---------------Events-------------------
 
