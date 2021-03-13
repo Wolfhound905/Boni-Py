@@ -5,7 +5,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-guilds = int(os.getenv('GUILD_ID'))
+guilds = []
+guilds.append(int(os.getenv('GUILD_ID')))
 
 global NewId
 NewId = []
@@ -43,7 +44,7 @@ class CreateVC(commands.Cog):
                 break
         return category
 
-    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [guilds])
+    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = guilds)
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
         voice_state = ctx.author.voice
         if voice_state == None:
