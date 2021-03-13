@@ -10,7 +10,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix="/")
 slash = SlashCommand(bot, sync_commands=True, override_type = True)
-activity = discord.Activity(name='to my creator', type=discord.ActivityType.listening)
+activity = discord.Activity(name='with some code', type=discord.ActivityType.playing)
 
 
 bot.load_extension("behaviors.clubMatches")
@@ -41,8 +41,7 @@ async def on_voice_state_update(member, before, after):
           if len(before.channel.members) == 0:
             NewId.remove(before.channel.id)
             print("channel is now empty")
-            await before.channel.delete()
-  
+            await before.channel.delete()  
 
   
 bot.run(TOKEN)
