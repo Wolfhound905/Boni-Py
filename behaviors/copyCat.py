@@ -5,7 +5,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-load_dotenv()
 guilds = []
 guilds.append(int(os.getenv('GUILD_ID')))
 
