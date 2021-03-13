@@ -5,13 +5,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-guilds = int(os.getenv('GUILD_ID'))
+guilds = []
+guilds.append(int(os.getenv('GUILD_ID')))
 
 class helpMenu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
      
-    @cog_ext.cog_slash(name="help", description='Use this command and I will give you the answers to life.', guild_ids = [guilds])
+    @cog_ext.cog_slash(name="help", description='Use this command and I will give you the answers to life.', guild_ids = guilds)
     async def group_say(self, ctx: SlashContext):
         embed=discord.Embed(title="Help Menu", description="A list of all slash commands to use with Boni", color=0xf6c518)
         embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/819606905735479356/f30474b0aa66b3541bfdacf5bad5783a.png")
