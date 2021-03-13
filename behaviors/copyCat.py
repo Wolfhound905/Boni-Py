@@ -1,17 +1,17 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-import os 
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
-GUILD_ID = int(os.getenv('GUILD_ID'))
+guilds = int(os.getenv('GUILD_ID'))
 
 class copyCat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="say", description='Enter a message and I will repeat it :)', guild_ids = [GUILD_ID])
+    @cog_ext.cog_slash(name="say", description='Enter a message and I will repeat it :)', guild_ids = [guilds])
     async def group_say(self, ctx: SlashContext, message: str):
         await ctx.send(message)
             

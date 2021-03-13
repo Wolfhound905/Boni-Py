@@ -1,14 +1,18 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from getGuilds import guilds
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+guilds = int(os.getenv('GUILD_ID'))
 
 
 class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="match", description='Let me know if we had a "win" or a "loss".', guild_ids = guilds)
+    @cog_ext.cog_slash(name="match", description='Let me know if we had a "win" or a "loss".', guild_ids = [guilds])
     async def group_say(self, ctx: SlashContext, result: str):
       win_messages = [
         "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!", 
