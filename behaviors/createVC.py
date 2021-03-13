@@ -52,6 +52,9 @@ class CreateVC(commands.Cog):
         else:
             guild = ctx.guild
             category = self.get_category_by_name(guild, "Voice Channels")
+            if member_cap >= 100:
+                await ctx.respond(await ctx.send_hidden("Incorrect member cap on channel!\n1-99 is the vailid range for a member cap."))
+                return
             channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category)
             await ctx.send(f"I created the voice channel `{channel_name}`!")
             NewId.append(channel.id)
