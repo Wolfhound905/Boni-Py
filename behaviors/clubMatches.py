@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 guilds = int(os.getenv('GUILD_ID'))
 
-
 class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

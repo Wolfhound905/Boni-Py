@@ -43,7 +43,7 @@ class CreateVC(commands.Cog):
                 break
         return category
 
-    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [443884809484238848, 610818618325729281])
+    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = [guilds])
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
         voice_state = ctx.author.voice
         if voice_state == None:

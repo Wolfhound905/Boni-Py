@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-GUILD_ID = int(os.getenv('GUILD_ID'))
+guilds = int(os.getenv('GUILD_ID'))
 
 class helpMenu(commands.Cog):
     def __init__(self, bot):
