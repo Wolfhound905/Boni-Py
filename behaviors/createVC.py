@@ -3,6 +3,9 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 
 
+global NewId
+NewId = []
+
 class CreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -30,8 +33,7 @@ class CreateVC(commands.Cog):
             guild = ctx.guild
             channel = await guild.create_voice_channel(channel_name, user_limit=member_cap)
             await ctx.send(f"I created the voice channel `{channel_name}`!")
-            global NewId
-            NewId = channel.id
+            NewId.append(channel.id)
             await ctx.author.move_to(channel=channel)
             print(voice_state)
             print(NewId)
