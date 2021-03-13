@@ -34,12 +34,14 @@ async def on_ready():
 @bot.event
 async def on_voice_state_update(member, before, after):
   from behaviors.createVC import NewId
-  if before.channel is not None: 
-   if before.channel.id != 610818618325729285: # DO NOT REMOVE!!!!!
-     if before.channel.id == NewId:
-      if len(before.channel.members) == 0:
-        print("channel is now empty")
-        await before.channel.delete()
+  if len(NewId) > 0:
+    if before.channel is not None: 
+      if before.channel.id != 610818618325729285: # DO NOT REMOVE!!!!!
+        if before.channel.id in NewId:
+          if len(before.channel.members) == 0:
+            NewId.remove(before.channel.id)
+            print("channel is now empty")
+            await before.channel.delete()
   
 
   
