@@ -16,7 +16,7 @@ class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name="match", description='Let me know if we had a "win" or a "loss".', guild_ids=guilds)
+    @cog_ext.cog_slash(name="match", description='Let me know if we had a "win" or a "loss". Or you can check our stats with "stats"', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, result: str):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
@@ -64,6 +64,19 @@ class clubMatches(commands.Cog):
             con.commit()
             con.close()
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(loss_streak + 1)}")
+        elif result == "stats":
+            con = psycopg2.connect(db)
+            cur = con.cursor()
+            # Example: "wins" is row[0]
+            cur.execute(
+                "SELECT wins, losses, win_streak, loss_streak from stats")
+            rows = cur.fetchall()
+            for row in rows:
+                wins = row[0]
+                losses = row[1]
+                win_streak = row[2]
+                loss_streak = row[3]
+
         else:
             await ctx.respond(await ctx.send_hidden("Incorrect format please use. `/match <win/loss>`"))
 

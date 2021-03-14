@@ -34,9 +34,6 @@ class CreateVC(commands.Cog):
     ]
 
     def get_category_by_name(self, guild, category_name):
-        """
-        Get category object by category name
-        """
         category = None
         for c in guild.categories:
             if c.name == category_name:
