@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import psycopg2
 import random
 import os
+from database.statsdb import increment_loss, increment_win, get_stats, Stats
 
 load_dotenv()
 guilds = []
@@ -30,53 +31,19 @@ class clubMatches(commands.Cog):
         ]
 
         if result == "win":
-            con = psycopg2.connect(db)
-            cur = con.cursor()
-            # Example: "wins" is row[0]
-            cur.execute(
-                "SELECT wins, losses, win_streak, loss_streak from stats")
-            rows = cur.fetchall()
-            for row in rows:
-                wins = row[0]
-                losses = row[1]
-                win_streak = row[2]
-                loss_streak = row[3]
-            cur.execute(
-                f"UPDATE stats SET wins = {str(wins + 1)}, win_streak = {str(win_streak + 1)}, loss_streak= 0 WHERE wins={str(wins)} AND losses={str(losses)} AND win_streak={str(win_streak)} AND loss_streak={str(loss_streak)}")
-            con.commit()
-            con.close()
-            await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(win_streak + 1)}")
+            increment_win()
+            stats = get_stats()
+            
+            await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(stats.win_streak)}")
 
         elif result == "loss":
-            con = psycopg2.connect(db)
-            cur = con.cursor()
-            # Example: "wins" is row[0]
-            cur.execute(
-                "SELECT wins, losses, win_streak, loss_streak from stats")
-            rows = cur.fetchall()
-            for row in rows:
-                wins = row[0]
-                losses = row[1]
-                win_streak = row[2]
-                loss_streak = row[3]
-            cur.execute(
-                f"UPDATE stats SET losses = {str(losses + 1)}, loss_streak = {str(loss_streak + 1)}, win_streak= 0 WHERE wins={str(wins)} AND losses={str(losses)} AND win_streak={str(win_streak)} AND loss_streak={str(loss_streak)}")
-            con.commit()
-            con.close()
-            await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(loss_streak + 1)}")
+            increment_loss()
+            stats = get_stats()
+            
+            await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
         elif result == "stats":
-            con = psycopg2.connect(db)
-            cur = con.cursor()
-            # Example: "wins" is row[0]
-            cur.execute(
-                "SELECT wins, losses, win_streak, loss_streak from stats")
-            rows = cur.fetchall()
-            for row in rows:
-                wins = row[0]
-                losses = row[1]
-                win_streak = row[2]
-                loss_streak = row[3]
-
+            stats = get_stats()
+                
         else:
             await ctx.respond(await ctx.send_hidden("Incorrect format please use. `/match <win/loss>`"))
 

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from behaviors.createVC import NewId
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -35,7 +36,6 @@ async def on_ready():
 
 @bot.event
 async def on_voice_state_update(member, before, after):
-  from behaviors.createVC import NewId
   if len(NewId) > 0:
     if before.channel is not None: 
       if before.channel.id != 610818618325729285: # DO NOT REMOVE!!!!!
