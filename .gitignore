@@ -1,6 +1,8 @@
 #Ignore the env
 .env
-startup.sh
+/env
+
 #ignore this stuff that is just extra things 👍
 **/__pycache__/
 .vscode
+startup.sh

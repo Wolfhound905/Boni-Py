@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from dotenv import load_dotenv
-import psycopg2
 import random
 import os
 from database.statsdb import increment_loss, increment_win, increment_new_season, get_stats, Stats
