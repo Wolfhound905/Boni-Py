@@ -40,7 +40,7 @@ class clubMatches(commands.Cog):
         }
     ]
 
-    @cog_ext.cog_subcommand(group= "match", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
+    @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
