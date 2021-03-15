@@ -1,12 +1,16 @@
 import os
 import discord
-from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_table_name)
+from configuration import (get_user_name, get_password,
+                           get_user_name, get_host, get_admins, get_database)
 import mysql.connector
 
-db = mysql.connector.connect(user=get_user_name, password=get_password, host=get_host, database=get_table_name)
+db = mysql.connector.connect(user=get_user_name(
+), password=get_password(), host=get_host(), database=get_database())
 sql = db.cursor()
 
 # Using this class as return type for get_stats function
+
+
 class Stats():
     season = 0
     win = 0
@@ -40,30 +44,30 @@ def get_stats() -> Stats:
 
 
 def increment_win():
-    sql.execute("""
+    stats = get_stats()
+    season = str(stats.season)
+    new_max_win_streak = str(max(stats.win_streak + 1, stats.max_win_streak))
+    sql.execute(f"""
     UPDATE stats
-    SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= (SELECT Greatest(max_win_streak, win_streak + 1) FROM stats WHERE season = (SELECT Max(season) FROM stats))
-    WHERE season = (SELECT Max(season) FROM stats)
+    SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= {new_max_win_streak}
+    WHERE season = {season}
     """)
-    sql.commit()
-    sql.close()
 
 
 def increment_loss():
-    sql.execute("""
+    stats = get_stats()
+    season = str(stats.season)
+    new_max_loss_streak = str(
+        max(stats.loss_streak + 1, stats.max_loss_streak))
+    sql.execute(f"""
     UPDATE stats
-    SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= (SELECT Greatest(max_loss_streak, loss_streak + 1) FROM stats WHERE season = (SELECT Max(season) FROM stats))
-    WHERE season = (SELECT Max(season) FROM stats)
+    SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= {new_max_loss_streak}
+    WHERE season = 10
     """)
-    sql.commit()
-    sql.close()
 
 
 def increment_new_season(season):
-    sql.execute(
-        f"""INSERT INTO stats 
-        (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
-        VALUES({season}, 0, 0, 0, 0, 0, 0)
-        """)
-    sql.commit()
-    sql.close()
+    sql.execute(f"""
+    INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
+    VALUES({season}, 0, 0, 0, 0, 0, 0)
+    """)
