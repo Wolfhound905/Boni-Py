@@ -31,7 +31,7 @@ def get_stats() -> Stats:
     cur = con.cursor()
     # Example: "season" is row[0]
     cur.execute(
-        "SELECT season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak from stats")
+        "SELECT season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak from stats WHERE season = (SELECT Max(season) FROM stats)")
     rows = cur.fetchall()
 
     for row in rows:

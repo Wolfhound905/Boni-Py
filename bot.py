@@ -25,11 +25,11 @@ bot.load_extension("behaviors.newSeason")
 async def on_ready():
     print("ready")
     commands = slash.commands
-    print("commands".center(20, "#"))
+    print(" Commands ".center(14, "~"))
     await bot.change_presence(activity=activity)
     for key in commands:
         print(commands[key].name)
-    print(guilds)
+    print("⸻⸻⸻⸻") 
   
 
   

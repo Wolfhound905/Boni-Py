@@ -16,9 +16,32 @@ db = os.getenv('DB')
 class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    options = [
+        {
+            "name": "result",
+            "description": "Win/loss report club matches.",
+            "type": 3,
+            "required":False,
+            "choices": [
+                {
+                    "name": "win",
+                    "value": "club_win"
+                },
+                {
+                    "name": "loss",
+                    "value": "club_loss"
+                },
+                {
+                    "name": "stats",
+                    "value": "club_stats"
+                }
+            ]
+        }
+    ]
 
-    @cog_ext.cog_slash(name="match", description='Let me know if we had a "win" or a "loss". Or you can check our stats with "stats"', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, result: str):
+    @cog_ext.cog_subcommand(group= "match", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
+    async def group_say(self, ctx: SlashContext):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
             "I wanna grow up to slam as hard as you guys one day!", "They won’t forget the day they lost to the Slambonis!",
@@ -30,18 +53,18 @@ class clubMatches(commands.Cog):
             "Darn. I forgot what I was gonna to say…", "Well we’ve still got each other"
         ]
 
-        if result == "win":
+        if result == "club_win":
             increment_win()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(stats.win_streak)}")
 
-        elif result == "loss":
+        elif result == "club_loss":
             increment_loss()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
-        elif result == "stats":
+        elif result == "club_stats":
             stats = get_stats()
             if stats.win_streak > stats.loss_streak:
                 streak_message = f"We have a current win streak of {stats.win_streak} games." 
