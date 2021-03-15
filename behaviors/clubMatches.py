@@ -1,16 +1,13 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from dotenv import load_dotenv
 import psycopg2
 import random
-import os
 from database.statsdb import increment_loss, increment_win, increment_new_season, get_stats, Stats
+from configuration import get_guilds
 
-load_dotenv()
-guilds = []
-guilds.append(int(os.getenv('GUILD_ID')))
-db = os.getenv('DB')
+
+guilds = get_guilds()
 
 
 class clubMatches(commands.Cog):

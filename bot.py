@@ -1,13 +1,9 @@
 # bot.py
-import os
-from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
+from configuration import get_token
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-guilds = int(os.getenv('GUILD_ID'))
 
 bot = commands.Bot(command_prefix="/")
 slash = SlashCommand(bot, sync_commands=True, override_type = True)
@@ -33,4 +29,4 @@ async def on_ready():
   
 
   
-bot.run(TOKEN)
+bot.run(get_token())
