@@ -1,11 +1,10 @@
 import os
 import discord
+from configuration import get_db
 
-db = os.getenv('DB')
+db = get_db()
 
 # Using this class as return type for get_stats function
-
-
 class Stats():
     season = 0
     win = 0

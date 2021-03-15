@@ -1,12 +1,9 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-import os 
-from dotenv import load_dotenv
+from configuration import get_guilds
 
-load_dotenv()
-guilds = []
-guilds.append(int(os.getenv('GUILD_ID')))
+guilds = get_guilds()
 
 class helpMenu(commands.Cog):
     def __init__(self, bot):
