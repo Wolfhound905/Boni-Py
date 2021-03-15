@@ -19,7 +19,7 @@ bot.load_extension("behaviors.clubMatches")
 bot.load_extension("behaviors.createVC")
 bot.load_extension("behaviors.help")
 bot.load_extension("behaviors.copyCat")
-# bot.load_extension("behaviors.database")
+bot.load_extension("behaviors.newSeason")
 
 
 @bot.event

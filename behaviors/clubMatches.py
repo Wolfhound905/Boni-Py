@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import psycopg2
 import random
 import os
-from database.statsdb import increment_loss, increment_win, get_stats, Stats
+from database.statsdb import increment_loss, increment_win, increment_new_season, get_stats, Stats
 
 load_dotenv()
 guilds = []
@@ -45,7 +45,9 @@ class clubMatches(commands.Cog):
             stats = get_stats()
                 
         else:
-            await ctx.respond(await ctx.send_hidden("Incorrect format please use. `/match <win/loss>`"))
+            await ctx.respond(eat=True)
+
+            await ctx.send( hidden=True, content="Incorrect format please use. `/match <win/loss>`")
 
 
 def setup(bot):
