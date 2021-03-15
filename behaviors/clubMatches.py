@@ -43,10 +43,22 @@ class clubMatches(commands.Cog):
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
         elif result == "stats":
             stats = get_stats()
+            if stats.win_streak > stats.loss_streak:
+                streak_message = f"We have a current win streak of {stats.win_streak} games." 
+            else: 
+                streak_message = f"We have a current loss streak of {stats.win_streak} games." 
+            embed=discord.Embed(title="⠀", color=0xf6c518)
+            embed.set_author(name=f"Slambonis Season {stats.season}")
+            embed.set_thumbnail(url="https://cdn.discordapp.com/icons/610818618325729281/a39b2a8d628ff0a1a20caf44c8e802e5.png")
+            embed.add_field(name="Total Wins", value=f"So far we have won {stats.wins} matches this season", inline=False)
+            embed.add_field(name="Total Losses", value=f"We have lost {stats.losses} matches :(", inline=False)
+            embed.add_field(name="Streak", value=streak_message, inline=False)
+            embed.add_field(name="Max Streaks", value=f"Our best win streak is {stats.max_win_streak} and our biggest loss streak is {stats.max_loss_streak}.", inline=False)
+            embed.set_footer(text="Wording not final :)")
+            await ctx.send(embed=embed)
                 
         else:
             await ctx.respond(eat=True)
-
             await ctx.send( hidden=True, content="Incorrect format please use. `/match <win/loss>`")
 
 

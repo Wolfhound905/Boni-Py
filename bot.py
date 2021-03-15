@@ -41,9 +41,10 @@ async def on_voice_state_update(member, before, after):
       if before.channel.id != 610818618325729285: # DO NOT REMOVE!!!!!
         if before.channel.id in NewId:
           if len(before.channel.members) == 0:
-            NewId.remove(before.channel.id)
             print("channel is now empty")
-            await before.channel.delete()  
+            await before.channel.delete()
+            NewId.remove(before.channel.id)
+  
 
   
 bot.run(TOKEN)

@@ -8,13 +8,10 @@ load_dotenv()
 guilds = []
 guilds.append(int(os.getenv('GUILD_ID')))
 
-global NewId
-NewId = []
-
 class CreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+        
     global NewId
     NewId = []
 

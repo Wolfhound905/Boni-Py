@@ -19,6 +19,9 @@ class newSeason(commands.Cog):
             increment_new_season(season)
             await ctx.send(f"Season {season} was added to the database.")
             await ctx.send(hidden=True, content="If this was a mistake please contact <@!324352543612469258>")
+        else:
+            await ctx.respond(eat=True)
+            await ctx.send(hidden=True, content="Sorry, you may not use this command.")
 
 def setup(bot):
     bot.add_cog(newSeason(bot))
