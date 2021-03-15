@@ -1,8 +1,10 @@
 import os
 import discord
-from configuration import get_db
+from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_table_name)
+import mysql.connector
 
-db = get_db()
+db = mysql.connector.connect(user=get_user_name, password=get_password, host=get_host, database=get_table_name)
+sql = db.cursor()
 
 # Using this class as return type for get_stats function
 class Stats():
@@ -25,12 +27,10 @@ class Stats():
 
 
 def get_stats() -> Stats:
-    con = psycopg2.connect(db)
-    cur = con.cursor()
     # Example: "season" is row[0]
-    cur.execute(
+    sql.execute(
         "SELECT season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak from stats WHERE season = (SELECT Max(season) FROM stats)")
-    rows = cur.fetchall()
+    rows = sql.fetchall()
 
     for row in rows:
         return Stats(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
@@ -40,36 +40,30 @@ def get_stats() -> Stats:
 
 
 def increment_win():
-    con = psycopg2.connect(db)
-    cur = con.cursor()
-    cur.execute("""
+    sql.execute("""
     UPDATE stats
     SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= (SELECT Greatest(max_win_streak, win_streak + 1) FROM stats WHERE season = (SELECT Max(season) FROM stats))
     WHERE season = (SELECT Max(season) FROM stats)
     """)
-    con.commit()
-    con.close()
+    sql.commit()
+    sql.close()
 
 
 def increment_loss():
-    con = psycopg2.connect(db)
-    cur = con.cursor()
-    cur.execute("""
+    sql.execute("""
     UPDATE stats
     SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= (SELECT Greatest(max_loss_streak, loss_streak + 1) FROM stats WHERE season = (SELECT Max(season) FROM stats))
     WHERE season = (SELECT Max(season) FROM stats)
     """)
-    con.commit()
-    con.close()
+    sql.commit()
+    sql.close()
 
 
 def increment_new_season(season):
-    con = psycopg2.connect(db)
-    cur = con.cursor()
-    cur.execute(
+    sql.execute(
         f"""INSERT INTO stats 
         (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
         VALUES({season}, 0, 0, 0, 0, 0, 0)
         """)
-    con.commit()
-    con.close()
+    sql.commit()
+    sql.close()
