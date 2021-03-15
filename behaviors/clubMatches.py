@@ -19,7 +19,7 @@ class clubMatches(commands.Cog):
     
     options = [
         {
-            "name": "result",
+            "name": "match",
             "description": "Win/loss report club matches.",
             "type": 3,
             "required":False,
@@ -41,7 +41,7 @@ class clubMatches(commands.Cog):
     ]
 
     @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext):
+    async def group_say(self, ctx: SlashContext, match: str):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
             "I wanna grow up to slam as hard as you guys one day!", "They won’t forget the day they lost to the Slambonis!",
@@ -53,18 +53,18 @@ class clubMatches(commands.Cog):
             "Darn. I forgot what I was gonna to say…", "Well we’ve still got each other"
         ]
 
-        if result == "club_win":
+        if match == "club_win":
             increment_win()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(stats.win_streak)}")
 
-        elif result == "club_loss":
+        elif match == "club_loss":
             increment_loss()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
-        elif result == "club_stats":
+        elif match == "club_stats":
             stats = get_stats()
             if stats.win_streak > stats.loss_streak:
                 streak_message = f"We have a current win streak of {stats.win_streak} games." 
@@ -82,7 +82,7 @@ class clubMatches(commands.Cog):
                 
         else:
             await ctx.respond(eat=True)
-            await ctx.send( hidden=True, content="Incorrect format please use. `/match <win/loss>`")
+            await ctx.send( hidden=True, content="Incorrect format please use. `/club match:<win/loss/stats>`")
 
 
 def setup(bot):
