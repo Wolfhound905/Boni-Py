@@ -8,10 +8,13 @@ load_dotenv()
 guilds = []
 guilds.append(int(os.getenv('GUILD_ID')))
 
+global NewId
+NewId = []
+
 class CreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+    
     global NewId
     NewId = []
 
@@ -42,8 +45,7 @@ class CreateVC(commands.Cog):
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
         voice_state = ctx.author.voice
         if voice_state == None:
-            await ctx.respond(eat=True)
-            await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
+            await ctx.respond(await ctx.send_hidden("You need to be in Mouth Chat to use this command."))
         else:
             guild = ctx.guild
             category = self.get_category_by_name(guild, "Voice Channels")
@@ -56,6 +58,18 @@ class CreateVC(commands.Cog):
             await ctx.author.move_to(channel=channel)
             print(voice_state)
             print(NewId)
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        if len(NewId) > 0:
+            if before.channel is not None:
+                if before.channel.id != 610818618325729285:  # DO NOT REMOVE!!!!!
+                    if before.channel.id in NewId:
+                        if len(before.channel.members) == 0:
+                            print("channel is now empty")
+                            await before.channel.delete()
+                            NewId.remove(before.channel.id)
+
 
 def setup(bot):
     bot.add_cog(CreateVC(bot))
