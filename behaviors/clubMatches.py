@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-import psycopg2
 import random
 from database.statsdb import increment_loss, increment_win, increment_new_season, get_stats, Stats
 from configuration import get_guilds

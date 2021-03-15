@@ -1,4 +1,3 @@
-import psycopg2
 import os
 import discord
 from configuration import get_db
