@@ -37,7 +37,7 @@ class clubMatches(commands.Cog):
     ]
 
     @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, match: str):
+    async def group_say(self, ctx: SlashContext):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
             "I wanna grow up to slam as hard as you guys one day!", "They won’t forget the day they lost to the Slambonis!",
@@ -60,6 +60,7 @@ class clubMatches(commands.Cog):
             stats = get_stats()
             
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
+            
         elif match == "club_stats":
             stats = get_stats()
             if stats.win_streak > stats.loss_streak:

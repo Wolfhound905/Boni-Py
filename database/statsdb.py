@@ -4,8 +4,7 @@ from configuration import (get_user_name, get_password,
                            get_user_name, get_host, get_admins, get_database)
 import mysql.connector
 
-db = mysql.connector.connect(user=get_user_name(
-), password=get_password(), host=get_host(), database=get_database())
+db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
 sql = db.cursor()
 
 # Using this class as return type for get_stats function
@@ -66,8 +65,10 @@ def increment_loss():
     """)
 
 
-def increment_new_season(season):
+def increment_new_season():
+    stats = get_stats()
+    new_season = stats.season + 1
     sql.execute(f"""
     INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
-    VALUES({season}, 0, 0, 0, 0, 0, 0)
+    VALUES({new_season}, 0, 0, 0, 0, 0, 0)
     """)

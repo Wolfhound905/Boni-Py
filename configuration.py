@@ -26,9 +26,14 @@ def load_env():
 
     env["DATABASE"] = os.getenv("DATABASE")
 
+    env["WELCOME_CHANNEL"] = os.getenv("WELCOME_CHANNEL")
+
 
 def get_guilds() -> list:
     return env["GUILD_ID"]
+
+def get_welcome_channel() -> int:
+    return env["WELCOME_CHANNEL"]
 
 
 def get_token() -> str:

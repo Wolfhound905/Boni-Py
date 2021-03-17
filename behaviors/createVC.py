@@ -2,19 +2,14 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds
+from database.voiceVCs import get_voice_channels, add_vc, remove_vc
 
 guilds = get_guilds()
-
-global NewId
-NewId = []
 
 class CreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    global NewId
-    NewId = []
-
     options = [
         {
             "name": "channel_name",
@@ -51,21 +46,20 @@ class CreateVC(commands.Cog):
                 return
             channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category)
             await ctx.send(f"I created the voice channel `{channel_name}`!")
-            NewId.append(channel.id)
+            channel_id = str(channel.id)
+            add_vc(channel_id)
             await ctx.author.move_to(channel=channel)
-            print(voice_state)
-            print(NewId)
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        if len(NewId) > 0:
+        if len(get_voice_channels()) > 0:
             if before.channel is not None:
                 if before.channel.id != 610818618325729285:  # DO NOT REMOVE!!!!!
-                    if before.channel.id in NewId:
+                    if before.channel.id in get_voice_channels():
                         if len(before.channel.members) == 0:
-                            print("channel is now empty")
                             await before.channel.delete()
-                            NewId.remove(before.channel.id)
+                            delete_vc = str(before.channel.id)
+                            remove_vc(delete_vc)
 
 
 def setup(bot):
