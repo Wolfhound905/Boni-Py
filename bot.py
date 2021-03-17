@@ -20,6 +20,7 @@ bot.load_extension("behaviors.adminCommands")
 bot.load_extension("behaviors.welcome")
 
 
+
 @bot.event
 async def on_ready():
     print("ready")

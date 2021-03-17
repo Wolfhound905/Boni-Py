@@ -38,6 +38,8 @@ def get_stats() -> Stats:
     for row in rows:
         return Stats(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
 
+    sql.close()
+
     # If no rows exist then raise an error
     raise Exception("No rows in stats to read")
 
@@ -51,19 +53,19 @@ def increment_win():
     SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= {new_max_win_streak}
     WHERE season = {season}
     """)
+    sql.close()
 
 
 def increment_loss():
     stats = get_stats()
     season = str(stats.season)
-    new_max_loss_streak = str(
-        max(stats.loss_streak + 1, stats.max_loss_streak))
+    new_max_loss_streak = str(max(stats.loss_streak + 1, stats.max_loss_streak))
     sql.execute(f"""
     UPDATE stats
     SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= {new_max_loss_streak}
-    WHERE season = 10
+    WHERE season = {season}
     """)
-
+    sql.close()
 
 def increment_new_season():
     stats = get_stats()
@@ -72,3 +74,4 @@ def increment_new_season():
     INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
     VALUES({new_season}, 0, 0, 0, 0, 0, 0)
     """)
+    sql.close()

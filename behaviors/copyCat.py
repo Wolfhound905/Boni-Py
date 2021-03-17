@@ -13,7 +13,8 @@ class copyCat(commands.Cog):
     @cog_ext.cog_slash(name="say", description='Enter a message and I will repeat it :)', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, message: str):
         if ctx.author.id in admins:
-            await ctx.respond(await ctx.send_hidden("Message sent successfully"))
+            await ctx.respond(eat=True)
+            await ctx.send(hidden=True, content="Message sent successfully")
             await ctx.send(message)
         else:
             await ctx.respond(eat=True)

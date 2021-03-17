@@ -28,8 +28,10 @@ def add_vc(channel_id):
     sql.execute(f"""
     INSERT into voice_channels (active_vc) values ({channel_id})
     """)
+    sql.close()
 
 def remove_vc(delete_vc):
     sql.execute(f"""
     DELETE FROM voice_channels WHERE active_vc={delete_vc}
     """)
+    sql.close()

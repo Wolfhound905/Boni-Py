@@ -22,22 +22,22 @@ class clubMatches(commands.Cog):
             "choices": [
                 {
                     "name": "win",
-                    "value": "club_win"
+                    "value": "win"
                 },
                 {
                     "name": "loss",
-                    "value": "club_loss"
+                    "value": "loss"
                 },
                 {
                     "name": "stats",
-                    "value": "club_stats"
+                    "value": "stats"
                 }
             ]
         }
     ]
 
     @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext):
+    async def group_say(self, ctx: SlashContext, match: str):
         win_messages = [
             "Way to rep the club!", "Wow! You guys are on a roll!", "Now that’s how you slam!",
             "I wanna grow up to slam as hard as you guys one day!", "They won’t forget the day they lost to the Slambonis!",
@@ -49,24 +49,24 @@ class clubMatches(commands.Cog):
             "Darn. I forgot what I was gonna to say…", "Well we’ve still got each other"
         ]
 
-        if match == "club_win":
+        if match == "win":
             increment_win()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(stats.win_streak)}")
 
-        elif match == "club_loss":
+        elif match == "loss":
             increment_loss()
             stats = get_stats()
             
             await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats.loss_streak)}")
             
-        elif match == "club_stats":
+        elif match == "stats":
             stats = get_stats()
             if stats.win_streak > stats.loss_streak:
                 streak_message = f"We have a current win streak of {stats.win_streak} games." 
             else: 
-                streak_message = f"We have a current loss streak of {stats.win_streak} games." 
+                streak_message = f"We have a current loss streak of {stats.loss_streak} games." 
             embed=discord.Embed(title="⠀", color=0xf6c518)
             embed.set_author(name=f"Slambonis Season {stats.season}")
             embed.set_thumbnail(url="https://cdn.discordapp.com/icons/610818618325729281/a39b2a8d628ff0a1a20caf44c8e802e5.png")
