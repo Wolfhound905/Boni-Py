@@ -18,6 +18,7 @@ bot.load_extension("behaviors.help")
 bot.load_extension("behaviors.copyCat")
 bot.load_extension("behaviors.adminCommands")
 bot.load_extension("behaviors.welcome")
+bot.load_extension("behaviors.exp")
 
 
 

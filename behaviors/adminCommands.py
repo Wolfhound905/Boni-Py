@@ -80,7 +80,7 @@ class adminCommands(commands.Cog):
                 await ctx.send(embed=embed)
 
     @commands.command(name="New Season")
-    async def _new_season(self, ctx):
+    async def new_season(self, ctx):
         """ Creates a new season "./new_season" """
         if ctx.author.id in admins:
             increment_new_season()
