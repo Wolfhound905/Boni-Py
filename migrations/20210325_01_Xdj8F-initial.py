@@ -8,7 +8,7 @@ __depends__ = {}
 
 steps = [
     step("""
-            CREATE TABLE stats (
+        CREATE TABLE stats (
                 season INT PRIMARY KEY NOT NULL,
                 wins INT NOT NULL,
                 losses INT NOT NULL,
