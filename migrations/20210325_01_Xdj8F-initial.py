@@ -21,7 +21,7 @@ steps = [
         
     step(
         """
-        CREATE TABLE xp (
+        CREATE TABLE user_xp (
                 user_id BIGINT PRIMARY KEY NOT NULL,
                 xp INT NOT NULL);
         """,
