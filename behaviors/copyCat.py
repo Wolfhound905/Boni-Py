@@ -1,3 +1,6 @@
+# This cog is for admins only and just repeats what you give it
+
+
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext

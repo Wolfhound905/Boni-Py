@@ -1,3 +1,6 @@
+# This cog is for the reporting of club wins and losses. 
+# A user can execute this command with /club match:result
+
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -18,7 +21,7 @@ class clubMatches(commands.Cog):
             "name": "match",
             "description": "Win/loss report club matches.",
             "type": 3,
-            "required":False,
+            "required":True,
             "choices": [
                 {
                     "name": "win",
@@ -28,16 +31,33 @@ class clubMatches(commands.Cog):
                     "name": "loss",
                     "value": "loss"
                 },
-                {
-                    "name": "stats",
-                    "value": "stats"
-                }
             ]
+        },
+        {
+            "name": "player_1",
+            "description": "People in club match.",
+            "type": 6,
+            "required":True,
+        },
+        {
+            "name": "player_2",
+            "description": "People in club match.",
+            "type": 6,
+            "required":True,
+        },
+        {
+            "name": "player_3",
+            "description": "People in club match.",
+            "type": 6,
+            "required":False,
         }
     ]
 
     @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, match: str):
+
+
+
         Messages = {
             "W1": ["Way to rep the club!",
                    "Wow! You guys are on a roll!",
