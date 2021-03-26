@@ -22,10 +22,12 @@ steps = [
     step(
         """
         CREATE TABLE user_xp (
-                user_id BIGINT UNSIGNED PRIMARY KEY NOT NULL,
+                id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                user_id BIGINT NOT NULL,
+                timestamp DATETIME NOT NULL,
                 xp INT NOT NULL);
         """,
-        "DROP TABLE xp;"),
+        "DROP TABLE user_xp;"),
 
     step("""
         CREATE TABLE voice_channels (
