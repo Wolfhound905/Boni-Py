@@ -25,7 +25,7 @@ steps = [
                 user_id BIGINT UNSIGNED PRIMARY KEY NOT NULL,
                 xp INT NOT NULL);
         """,
-        "DROP TABLE xp;"),
+        "DROP TABLE user_xp;"),
 
     step("""
         CREATE TABLE voice_channels (
