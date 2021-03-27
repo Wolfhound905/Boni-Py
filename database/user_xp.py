@@ -32,7 +32,7 @@ def get_recent_xp(user_id: str):
     return xp
 
 
-def add_xp(user_id: str, xp: int):
+def add_xp(user_id: int, xp: int):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     
