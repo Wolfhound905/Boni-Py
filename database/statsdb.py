@@ -51,6 +51,7 @@ def increment_win():
     SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= {new_max_win_streak}
     WHERE season = {season}
     """)
+    db.commit()
     sql.close()
 
 
@@ -65,6 +66,7 @@ def increment_loss():
     SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= {new_max_loss_streak}
     WHERE season = {season}
     """)
+    db.commit()
     sql.close()
 
 def increment_new_season():
@@ -76,4 +78,5 @@ def increment_new_season():
     INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
     VALUES({new_season}, 0, 0, 0, 0, 0, 0)
     """)
+    db.commit()
     sql.close()

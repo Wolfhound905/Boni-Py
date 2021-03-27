@@ -26,8 +26,9 @@ def add_vc(channel_id):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute(f"""
-    INSERT into voice_channels (active_vc) values ({channel_id})
+    INSERT INTO voice_channels (active_vc) values ({channel_id})
     """)
+    db.commit()
     sql.close()
 
 def remove_vc(delete_vc):
@@ -36,4 +37,5 @@ def remove_vc(delete_vc):
     sql.execute(f"""
     DELETE FROM voice_channels WHERE active_vc={delete_vc}
     """)
+    db.commit()
     sql.close()
