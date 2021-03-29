@@ -36,3 +36,19 @@ def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, p
     db.commit()
     sql.close()
 
+def get_guild_stats(id: int = None):
+    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+    season_id = id if id is not None else "(SELECT Max(id) FROM seasons)"
+
+    sql.execute(f"""
+    SELECT matches.* FROM seasons
+    INNER JOIN matches on matches.match_time >= seasons.date_start and matches.match_time <= seasons.date_end
+    WHERE seasons.id = {season_id}
+    """)
+    rows = sql.fetchall()
+
+    wins = len([x for x in rows if x[1] == 1])
+    losses = len([x for x in rows if x[1] == 0])
+
+    sql.close()
