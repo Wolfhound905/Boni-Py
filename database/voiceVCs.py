@@ -13,11 +13,11 @@ def get_voice_channels() -> list:
         "SELECT active_vc FROM voice_channels")
     rows = sql.fetchall()
 
-    active_vcs = []
+    active_vc = []
 
     for row in rows:
-        active_vcs.append(row[0])
-    return active_vcs
+        active_vc.append(row[0])
+    return active_vc
     sql.close()
     # If no rows exist then raise an error
     raise Exception("No rows in stats to read")
@@ -28,6 +28,7 @@ def add_vc(channel_id):
     sql.execute(f"""
     INSERT into voice_channels (active_vc) values ({channel_id})
     """)
+    db.commit()
     sql.close()
 
 def remove_vc(delete_vc):
@@ -36,4 +37,5 @@ def remove_vc(delete_vc):
     sql.execute(f"""
     DELETE FROM voice_channels WHERE active_vc={delete_vc}
     """)
+    db.commit()
     sql.close()
