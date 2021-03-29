@@ -5,75 +5,34 @@ import mysql.connector
 
 # Using this class as return type for get_stats function
 
-class Stats():
-    season = 0
-    win = 0
-    losses = 0
-    win_streak = 0
-    loss_streak = 0
-    max_win_streak = 0
-    max_loss_streak = 0
 
-    def __init__(self, season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak):
-        self.season = season
-        self.wins = wins
-        self.losses = losses
-        self.win_streak = win_streak
-        self.loss_streak = loss_streak
-        self.max_win_streak = max_win_streak
-        self.max_loss_streak = max_loss_streak
-
-
-def get_stats() -> Stats:
+def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, player_3: discord.Member = None, player_4: discord.Member = None, overtime: bool = None):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
-    # Example: "season" is row[0]
-    sql.execute(
-        "SELECT season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak from stats WHERE season = (SELECT Max(season) FROM stats)")
-    rows = sql.fetchall()
+    sql.execute("""
+    INSERT INTO matches
+    (win, overtime, match_time)
+    VALUES(%s, %s, CURRENT_TIMESTAMP)
+    """, (match, overtime))
 
-    for row in rows:
-        return Stats(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
-    sql.close()
-
-    # If no rows exist then raise an error
-    raise Exception("No rows in stats to read")
-
-
-def increment_win():
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
-    sql = db.cursor()
-    stats = get_stats()
-    season = str(stats.season)
-    new_max_win_streak = str(max(stats.win_streak + 1, stats.max_win_streak))
-    sql.execute(f"""
-    UPDATE stats
-    SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= {new_max_win_streak}
-    WHERE season = {season}
+    match_id = sql.lastrowid
+    match_query = ("""
+    INSERT INTO users_matches
+    (user_id, match_id)
+    VALUES(%s, %s), (%s, %s)
     """)
+    match_data = [player_1.id, match_id, player_2.id, match_id]
+    if player_3 is not None:
+        match_query = match_query + ",(%s, %s)"
+        match_data.extend([player_3.id, match_id])
+
+    if player_4 is not None:
+        match_query = match_query + ",(%s, %s)"
+        match_data.extend([player_4.id, match_id])
+
+    print(match_query)
+    print(match_data)
+    sql.execute(match_query, tuple(match_data))
+    db.commit()
     sql.close()
 
-
-def increment_loss():    
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
-    sql = db.cursor()
-    stats = get_stats()
-    season = str(stats.season)
-    new_max_loss_streak = str(max(stats.loss_streak + 1, stats.max_loss_streak))
-    sql.execute(f"""
-    UPDATE stats
-    SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= {new_max_loss_streak}
-    WHERE season = {season}
-    """)
-    sql.close()
-
-def increment_new_season():
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
-    sql = db.cursor()
-    stats = get_stats()
-    new_season = stats.season + 1
-    sql.execute(f"""
-    INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
-    VALUES({new_season}, 0, 0, 0, 0, 0, 0)
-    """)
-    sql.close()

@@ -33,6 +33,6 @@ def add_xp(user_id: str, give: str):
     SET xp = xp + {give}
     WHERE user_id = {user_id}
     """)
-
+    db.commit()
     sql.close()
 
