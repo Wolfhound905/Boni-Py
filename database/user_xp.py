@@ -28,11 +28,24 @@ def get_recent_xp(user_id: str):
     
     return xp
 
+async def check_for_reward_removal(bot: discord.Client):
+    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
 
-async def add_xp(user_id: int, xp: int, bot):
+    sql.execute("""
+        SELECT user_id, SUM(xp)
+        FROM user_xp
+        WHERE timestamp BETWEEN (NOW() - INTERVAL 14 DAY) AND NOW()
+        GROUP BY user_id""")
+    for (user_id, total_xp) in sql.fetchall():
+        if total_xp < 1000:
+            await remove_reward(bot, user_id)
+
+async def add_xp(user_id: int, xp: int, bot: discord.Client):
     old_xp = get_recent_xp(user_id)
-    if old_xp + xp > 2000:
-        await add_reward(bot, user_id)
+    if old_xp is not None:
+        if old_xp + xp >= 2000:
+            await add_reward(bot, user_id)
 
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
@@ -47,13 +60,14 @@ async def add_xp(user_id: int, xp: int, bot):
     db.commit()
     sql.close()
 
-async def add_reward(bot, user_id: int):
-    for member in bot.get_all_members():
-        print(f"{member.guild.id} has {member.id}")
-        if member.guild.id in get_guilds() and member.id == user_id:
-            print("Tries to add role")
-            role = get(member.server.roles, name="name of role")
-            await bot.add_roles(member, role)
+async def add_reward(bot: discord.Client, user_id: int):
+    guild = bot.get_guild(443884809484238848)
+    member = guild.get_member(user_id)
+    role = guild.get_role(825434367391170631)
+    await member.add_roles(role)
 
-async def remove_reward(bot, user_id: int):
-    print(f"Remove reward for player {user_id}")
+async def remove_reward(bot: discord.Client, user_id: int):
+    guild = bot.get_guild(443884809484238848)
+    member = guild.get_member(user_id)
+    role = guild.get_role(825434367391170631)
+    await member.remove_roles(role)

@@ -72,7 +72,7 @@ class clubMatches(commands.Cog):
             increment_win()
             stats = get_stats()
             message = self._get_message(stats.win_streak, self.win_messages)
-            await add_xp(ctx.author_id, 100)
+            await add_xp(ctx.author_id, 100, self.bot)
             await ctx.send(f"{message} \nCurrent win streak is: {str(stats.win_streak)}")
 
         elif match == "loss":
