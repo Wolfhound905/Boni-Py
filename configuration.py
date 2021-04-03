@@ -28,6 +28,10 @@ def load_env():
 
     env["WELCOME_CHANNEL"] = os.getenv("WELCOME_CHANNEL")
 
+    env["REWARD_ROLE_ID"] = os.getenv("REWARD_ROLE_ID")
+
+    env["REWARD_THRESHOLD"] = int(os.getenv("REWARD_THRESHOLD"))
+
 
 def get_guilds() -> list:
     return env["GUILD_ID"]
@@ -58,6 +62,12 @@ def get_database() -> str:
 
 def get_admins() -> list:
     return env["ADMINS"]
+
+def get_reward_role() -> int:
+    return env["REWARD_ROLE_ID"]
+
+def get_reward_threshold() -> int:
+    return env["REWARD_THRESHOLD"]
 
 
 # load enviroment variables on startup
