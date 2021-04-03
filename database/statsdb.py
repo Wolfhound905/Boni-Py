@@ -45,9 +45,9 @@ def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, p
             match_query = match_query + ",(%s, %s)"
 
     sql.execute(match_query, match_data)
+
     db.commit()
     sql.close()
-
 
 
 def get_guild_stats(id: int = None):
@@ -111,7 +111,5 @@ def stats_transform(rows):
         "current_streak": current_streak,
         "season": season
     }
-
-    print(stats)
 
     return(stats)

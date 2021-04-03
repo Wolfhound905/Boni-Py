@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 import random
-from database.statsdb import add_match
+from database.statsdb import add_match, get_guild_stats
 from configuration import get_guilds
 
 
@@ -95,12 +95,21 @@ class clubMatches(commands.Cog):
 
         if match == "win":
             add_match(True, player_1, player_2, player_3, player_4, overtime)
-            await ctx.send(random.choice(self.Messages["W1"]))
+
+            stats = get_guild_stats()
+            if stats['win_streak'] <= 3: win_messages = self.Messages["W1"]
+            elif stats['win_streak'] <= 6: win_messages = self.Messages["W2"]
+            else: win_messages = self.Messages["W3"]
+            await ctx.send(f"{random.choice(win_messages)} \nCurrent win streak is: {str(stats['current_streak'][1])}")
 
         elif match == "loss":
             add_match(False, player_1, player_2, player_3, player_4, overtime)
-            await ctx.send(random.choice(self.Messages["L1"]))
 
+            stats = get_guild_stats()
+            if stats['loss_streak'] <= 3: loss_messages = self.Messages["L1"]
+            elif stats['loss_streak'] <= 6: loss_messages = self.Messages["L2"]
+            else: loss_messages = self.Messages["L3"]
+            await ctx.send(f"{random.choice(loss_messages)} \nCurrent loss streak is: {str(stats['current_streak'][1])}")
         else:
             await ctx.send(hidden=True, content="Incorrect format please use. `/club match:<win/loss>`")
 
