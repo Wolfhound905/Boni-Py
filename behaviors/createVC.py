@@ -41,7 +41,7 @@ class CreateVC(commands.Cog):
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap=0):
         voice_state = ctx.author.voice
         if voice_state == None:
-            await ctx.respond(await ctx.send_hidden("You need to be in Mouth Chat to use this command."))
+            await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
         else:
             guild = ctx.guild
             category = self.get_category_by_name(guild, "Voice Channels")

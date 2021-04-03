@@ -17,7 +17,7 @@ class copyCat(commands.Cog):
     async def group_say(self, ctx: SlashContext, message: str):
         if ctx.author.id in admins:
             await ctx.send(hidden=True, content="Message sent successfully")
-            await ctx.channel.send(message)
+            await ctx.channel.send(content=message)
         else:
             await ctx.send(hidden=True, content="No ♥")
 
