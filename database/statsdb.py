@@ -1,13 +1,17 @@
 import os
 import discord
-from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database)
+from configuration import (get_user_name, get_password,
+                           get_user_name, get_host, get_admins, get_database)
 import mysql.connector
+from itertools import groupby
+from typing import Tuple
 
 # Using this class as return type for get_stats function
 
 
 def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, player_3: discord.Member = None, player_4: discord.Member = None, overtime: bool = None):
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute("""
     INSERT INTO matches
@@ -16,39 +20,71 @@ def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, p
     """, (match, overtime))
 
     match_id = sql.lastrowid
+
     match_query = ("""
     INSERT INTO users_matches
     (user_id, match_id)
-    VALUES(%s, %s), (%s, %s)
+    VALUES(%s, %s)
     """)
-    match_data = [player_1.id, match_id, player_2.id, match_id]
-    if player_3 is not None:
-        match_query = match_query + ",(%s, %s)"
-        match_data.extend([player_3.id, match_id])
 
-    if player_4 is not None:
-        match_query = match_query + ",(%s, %s)"
-        match_data.extend([player_4.id, match_id])
+    members_list = []
+    members_list.append(player_1.id)
+    members_list.append(player_2.id)
+    if player_3 != None:
+        members_list.append(player_3.id)
+    if player_4 != None:
+        members_list.append(player_4.id)
+    members_list = list(set(members_list))
 
-    print(match_query)
-    print(match_data)
-    sql.execute(match_query, tuple(match_data))
+    match_data = []
+
+    for x in members_list:
+        match_data.append(x)
+        match_data.append(match_id)
+        if len(match_data) > 2:
+            match_query = match_query + ",(%s, %s)"
+
+    sql.execute(match_query, match_data)
     db.commit()
     sql.close()
 
+
+
 def get_guild_stats(id: int = None):
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     season_id = id if id is not None else "(SELECT Max(id) FROM seasons)"
 
     sql.execute(f"""
-    SELECT matches.* FROM seasons
+    SELECT matches.*, seasons.number FROM seasons
     INNER JOIN matches on matches.match_time >= seasons.date_start and matches.match_time <= seasons.date_end
     WHERE seasons.id = {season_id}
     """)
     rows = sql.fetchall()
-
-    wins = len([x for x in rows if x[1] == 1])
-    losses = len([x for x in rows if x[1] == 0])
-
     sql.close()
+
+    season = rows[0][4]
+    wins = len([row for row in rows if row[1]])
+    losses = len([row for row in rows if not row[1]])
+
+    match_result = [x[1] for x in rows]
+
+    streaks = [(key, len(list(group))) for key, group in groupby(match_result)]
+
+    win_streak = max(streaks, key=lambda x: x[1] if x[0] == 1 else 0)[1]
+    loss_streak = max(streaks, key=lambda x: x[1] if x[0] == 0 else 0)[1]
+    current_streak = streaks[-1]
+
+    stats = {
+        "wins": wins,
+        "losses": losses,
+        "win_streak": win_streak,
+        "loss_streak": loss_streak,
+        "current_streak": current_streak,
+        "season": season
+    }
+
+    print(stats)
+
+    return(stats)
