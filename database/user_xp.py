@@ -2,7 +2,13 @@ import os
 import discord
 from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database, get_guilds)
 import mysql.connector
+from pymitter import EventEmitter
 
+<<<<<<< Updated upstream
+=======
+xp_events = EventEmitter()
+
+>>>>>>> Stashed changes
 def get_xp(user_id: str):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
@@ -15,8 +21,7 @@ def get_xp(user_id: str):
     
     return xp
 
-
-def get_recent_xp(user_id: str):
+def get_recent_xp(user_id: int):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     
