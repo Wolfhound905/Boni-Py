@@ -37,4 +37,17 @@ steps = [
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         """,
         "DROP TABLE users_matches;"),
+
+        #Remove now redundant table
+        step("DROP TABLE stats;",
+        """
+        CREATE TABLE stats (
+                season INT PRIMARY KEY NOT NULL,
+                wins INT NOT NULL,
+                losses INT NOT NULL,
+                win_streak INT NOT NULL,
+                loss_streak INT NOT NULL,
+                max_win_streak INT NOT NULL,
+                max_loss_streak INT NOT NULL);
+        """)
     ]
