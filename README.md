@@ -12,12 +12,13 @@ To use migrations start by downloading the necessary packages first
 
 Then create the yoyo configuration file `yoyo.ini` in the base directory and fill it with the following
 
+    [DEFAULT]
     sources = ./migrations/
     database = mysql://{user}@{host}/{database}
     migration_table = _yoyo_migration
     batch_mode = off
     verbosity = 0
-
+    
 From there you can apply and rollback existing migrations
 `yoyo apply -p`
 `yoyo rollback -p`

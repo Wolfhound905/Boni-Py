@@ -1,3 +1,6 @@
+# This cog creates voice channels for users
+# this may be executed with /room channel_name:name member_cap:optional
+
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -6,22 +9,23 @@ from database.voiceVCs import get_voice_channels, add_vc, remove_vc
 
 guilds = get_guilds()
 
+
 class CreateVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     options = [
         {
             "name": "channel_name",
             "description": "Name of the voice channel you want to make.",
             "type": 3,
-            "required":True
+            "required": True
         },
         {
             "name": "member_cap",
             "description": "Optional variable for the number of people allowed in the call.",
             "type": 4,
-            "required":False
+            "required": False
         }
     ]
 
@@ -33,11 +37,11 @@ class CreateVC(commands.Cog):
                 break
         return category
 
-    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids = guilds)
-    async def group_say(self, ctx: SlashContext, channel_name: str, member_cap = 0):
+    @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids=guilds)
+    async def group_say(self, ctx: SlashContext, channel_name: str, member_cap=0):
         voice_state = ctx.author.voice
         if voice_state == None:
-            await ctx.respond(await ctx.send_hidden("You need to be in Mouth Chat to use this command."))
+            await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
         else:
             guild = ctx.guild
             category = self.get_category_by_name(guild, "Voice Channels")

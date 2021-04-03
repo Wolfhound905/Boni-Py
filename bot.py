@@ -21,6 +21,8 @@ async def on_ready():
     bot.load_extension("behaviors.adminCommands")
     bot.load_extension("behaviors.welcome")
     bot.load_extension("behaviors.xp")
+    bot.load_extension("behaviors.slamberParty")
+    bot.load_extension("behaviors.stats")
     bot.load_extension("behaviors.rewardRemover")
 
     print("ready")

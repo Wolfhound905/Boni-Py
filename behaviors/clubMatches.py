@@ -1,8 +1,11 @@
+# This cog is for the reporting of club wins and losses.
+# A user can execute this command with /club match:result
+
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 import random
-from database.statsdb import increment_loss, increment_win, increment_new_season, get_stats, Stats
+from database.statsdb import add_match, get_guild_stats
 from configuration import get_guilds
 from database.user_xp import add_xp
 
@@ -48,7 +51,7 @@ class clubMatches(commands.Cog):
             "name": "match",
             "description": "Win/loss report club matches.",
             "type": 3,
-            "required":False,
+            "required": True,
             "choices": [
                 {
                     "name": "win",
@@ -58,61 +61,59 @@ class clubMatches(commands.Cog):
                     "name": "loss",
                     "value": "loss"
                 },
-                {
-                    "name": "stats",
-                    "value": "stats"
-                }
             ]
+        },
+        {
+            "name": "player_2",
+            "description": "People in club match.",
+            "type": 6,
+            "required": True,
+        },
+        {
+            "name": "player_3",
+            "description": "People in club match.",
+            "type": 6,
+            "required": False,
+        },
+        {
+            "name": "player_4",
+            "description": "People in club match.",
+            "type": 6,
+            "required": False,
+        },
+        {
+            "name": "overtime",
+            "description": "Did your match go into overtime?",
+            "type": 5,
+            "required": False,
         }
+
     ]
 
-    @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses or even view our stats!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, match: str):
+    @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses!', guild_ids=guilds)
+    async def group_say(self, ctx: SlashContext, match: str, player_2: discord.Member, overtime: bool = None, player_3: discord.Member = None, player_4: discord.Member = None):
+        player_1: discord.Member = ctx.author
+
         if match == "win":
-            increment_win()
-            stats = get_stats()
-            message = self._get_message(stats.win_streak, self.win_messages)
-            await add_xp(ctx.author_id, 100, self.bot)
-            await ctx.send(f"{message} \nCurrent win streak is: {str(stats.win_streak)}")
+            add_match(True, player_1, player_2, player_3, player_4, overtime)
+
+            stats = get_guild_stats()
+            message = self._get_message(stats['win_streak'], self.win_messages)
+            await ctx.send(f"{message} \nCurrent win streak is: {str(stats['current_streak'][1])}")
 
         elif match == "loss":
-            increment_loss()
-            stats = get_stats()
-            message = self._get_message(stats.loss_streak, self.loss_messages)
-            await ctx.send(f"{message} \nCurrent loss streak is: {str(stats.loss_streak)}")
-            
-        elif match == "stats":
-            await self._send_stats_overview(ctx)
-                
+            add_match(False, player_1, player_2, player_3, player_4, overtime)
+
+            stats = get_guild_stats()
+            message = self._get_message(stats['loss_streak'], self.loss_messages)
+            await ctx.send(f"{message} \nCurrent loss streak is: {str(stats['current_streak'][1])}")
         else:
-            await ctx.respond(eat=True)
-            await ctx.send( hidden=True, content="Incorrect format please use. `/club match:<win/loss/stats>`")
+            await ctx.send(hidden=True, content="Incorrect format please use. `/club match:<win/loss>`")
 
     def _get_message(self, streak: int, messages: dict):
         for streak_threshold in sorted(messages.keys()):
             if streak >= int(streak_threshold):
                 return random.choice(messages[streak_threshold])
-
-    async def _send_stats_overview(self, ctx):
-        stats = get_stats()
-        s_or_nah = "s"
-        if stats.win_streak > stats.loss_streak:
-            if stats.win_streak == 1: s_or_nah = ""
-            streak_message = f"We have a current win streak of {stats.win_streak} game{s_or_nah}." 
-        else: 
-            if stats.loss_streak == 1: s_or_nah = ""
-            streak_message = f"We have a current loss streak of {stats.loss_streak} game{s_or_nah}." 
-        
-        embed=discord.Embed(title="⠀", color=0xf6c518)
-        embed.set_author(name=f"Slambonis Season {stats.season}")
-        embed.set_thumbnail(url="https://cdn.discordapp.com/icons/610818618325729281/a39b2a8d628ff0a1a20caf44c8e802e5.png")
-        embed.add_field(name="Total Wins", value=f"So far we have won {stats.wins} matches this season", inline=False)
-        embed.add_field(name="Total Losses", value=f"We have lost {stats.losses} matches :(", inline=False)
-        embed.add_field(name="Streak", value=streak_message, inline=False)
-        embed.add_field(name="Max Streaks", value=f"Our best win streak is {stats.max_win_streak} and our biggest loss streak is {stats.max_loss_streak}.", inline=False)
-        embed.set_footer(text="Wording not final :)")
-        await ctx.send(embed=embed)
-
 
 def setup(bot):
     bot.add_cog(clubMatches(bot))

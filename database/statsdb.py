@@ -1,82 +1,115 @@
 import os
 import discord
-from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database)
+from configuration import (get_user_name, get_password,
+                           get_user_name, get_host, get_admins, get_database)
 import mysql.connector
+from itertools import groupby
+from typing import Tuple
 
 # Using this class as return type for get_stats function
 
-class Stats():
-    season = 0
-    win = 0
-    losses = 0
-    win_streak = 0
-    loss_streak = 0
-    max_win_streak = 0
-    max_loss_streak = 0
 
-    def __init__(self, season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak):
-        self.season = season
-        self.wins = wins
-        self.losses = losses
-        self.win_streak = win_streak
-        self.loss_streak = loss_streak
-        self.max_win_streak = max_win_streak
-        self.max_loss_streak = max_loss_streak
-
-
-def get_stats() -> Stats:
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, player_3: discord.Member = None, player_4: discord.Member = None, overtime: bool = None):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
-    # Example: "season" is row[0]
-    sql.execute(
-        "SELECT season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak from stats WHERE season = (SELECT Max(season) FROM stats)")
+    sql.execute("""
+    INSERT INTO matches
+    (win, overtime, match_time)
+    VALUES(%s, %s, CURRENT_TIMESTAMP)
+    """, (match, overtime))
+
+    match_id = sql.lastrowid
+
+    match_query = ("""
+    INSERT INTO users_matches
+    (user_id, match_id)
+    VALUES(%s, %s)
+    """)
+
+    members_list = []
+    members_list.append(player_1.id)
+    members_list.append(player_2.id)
+    if player_3 != None:
+        members_list.append(player_3.id)
+    if player_4 != None:
+        members_list.append(player_4.id)
+    members_list = list(set(members_list))
+
+    match_data = []
+
+    for x in members_list:
+        match_data.append(x)
+        match_data.append(match_id)
+        if len(match_data) > 2:
+            match_query = match_query + ",(%s, %s)"
+
+    sql.execute(match_query, match_data)
+
+    db.commit()
+    sql.close()
+
+
+def get_guild_stats(id: int = None):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+    season_id = id if id is not None else "(SELECT Max(id) FROM seasons WHERE CURRENT_TIMESTAMP >= seasons.date_start and CURRENT_TIMESTAMP <= seasons.date_end)"
+
+    sql.execute(f"""
+    SELECT matches.*, seasons.number FROM seasons
+    INNER JOIN matches on matches.match_time >= seasons.date_start and matches.match_time <= seasons.date_end
+    WHERE seasons.id = {season_id}
+    """)
     rows = sql.fetchall()
-
-    for row in rows:
-        return Stats(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
     sql.close()
 
-    # If no rows exist then raise an error
-    raise Exception("No rows in stats to read")
+    stats = stats_transform(rows)
 
+    return(stats)
 
-def increment_win():
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+def get_user_stats(uid, sid: int = None):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
-    stats = get_stats()
-    season = str(stats.season)
-    new_max_win_streak = str(max(stats.win_streak + 1, stats.max_win_streak))
+    season_id = sid if sid is not None else "(SELECT Max(id) FROM seasons WHERE CURRENT_TIMESTAMP >= seasons.date_start and CURRENT_TIMESTAMP <= seasons.date_end)"
+
     sql.execute(f"""
-    UPDATE stats
-    SET wins = wins + 1, loss_streak = 0, win_streak= win_streak + 1, max_win_streak= {new_max_win_streak}
-    WHERE season = {season}
+    SELECT matches.*, seasons.number as season, users_matches.user_id FROM seasons
+    INNER JOIN matches on matches.match_time >= seasons.date_start and matches.match_time <= seasons.date_end
+    INNER JOIN users_matches ON users_matches.match_id = matches.id
+    WHERE seasons.id = {season_id}
+    AND users_matches.user_id = {uid}
     """)
-    db.commit()
+
+    rows = sql.fetchall()
     sql.close()
 
+    stats = stats_transform(rows)
 
-def increment_loss():    
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
-    sql = db.cursor()
-    stats = get_stats()
-    season = str(stats.season)
-    new_max_loss_streak = str(max(stats.loss_streak + 1, stats.max_loss_streak))
-    sql.execute(f"""
-    UPDATE stats
-    SET losses = losses + 1, win_streak = 0, loss_streak= loss_streak + 1, max_loss_streak= {new_max_loss_streak}
-    WHERE season = {season}
-    """)
-    db.commit()
-    sql.close()
+    return(stats)
+    
 
-def increment_new_season():
-    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
-    sql = db.cursor()
-    stats = get_stats()
-    new_season = stats.season + 1
-    sql.execute(f"""
-    INSERT INTO stats (season, wins, losses, win_streak, loss_streak, max_win_streak, max_loss_streak) 
-    VALUES({new_season}, 0, 0, 0, 0, 0, 0)
-    """)
-    db.commit()
-    sql.close()
+def stats_transform(rows):
+    season = rows[0][4]
+    wins = len([row for row in rows if row[1]])
+    losses = len([row for row in rows if not row[1]])
+
+    match_result = [x[1] for x in rows]
+
+    streaks = [(key, len(list(group))) for key, group in groupby(match_result)]
+
+    win_streak = max(streaks, key=lambda x: x[1] if x[0] == 1 else 0)[1]
+    loss_streak = max(streaks, key=lambda x: x[1] if x[0] == 0 else 0)[1]
+    current_streak = streaks[-1]
+
+    stats = {
+        "wins": wins,
+        "losses": losses,
+        "win_streak": win_streak,
+        "loss_streak": loss_streak,
+        "current_streak": current_streak,
+        "season": season
+    }
+
+    return(stats)
