@@ -54,7 +54,7 @@ def get_guild_stats(id: int = None):
     db = mysql.connector.connect(user=get_user_name(
     ), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
-    season_id = id if id is not None else "(SELECT Max(id) FROM seasons)"
+    season_id = id if id is not None else "(SELECT Max(id) FROM seasons WHERE CURRENT_TIMESTAMP >= seasons.date_start and CURRENT_TIMESTAMP <= seasons.date_end)"
 
     sql.execute(f"""
     SELECT matches.*, seasons.number FROM seasons
@@ -64,6 +64,33 @@ def get_guild_stats(id: int = None):
     rows = sql.fetchall()
     sql.close()
 
+    stats = stats_transform(rows)
+
+    return(stats)
+
+def get_user_stats(uid, sid: int = None):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+    season_id = sid if sid is not None else "(SELECT Max(id) FROM seasons WHERE CURRENT_TIMESTAMP >= seasons.date_start and CURRENT_TIMESTAMP <= seasons.date_end)"
+
+    sql.execute(f"""
+    SELECT matches.*, seasons.number as season, users_matches.user_id FROM seasons
+    INNER JOIN matches on matches.match_time >= seasons.date_start and matches.match_time <= seasons.date_end
+    INNER JOIN users_matches ON users_matches.match_id = matches.id
+    WHERE seasons.id = {season_id}
+    AND users_matches.user_id = {uid}
+    """)
+
+    rows = sql.fetchall()
+    sql.close()
+
+    stats = stats_transform(rows)
+
+    return(stats)
+    
+
+def stats_transform(rows):
     season = rows[0][4]
     wins = len([row for row in rows if row[1]])
     losses = len([row for row in rows if not row[1]])
