@@ -1,10 +1,7 @@
 import os
 import discord
-from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database)
+from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database, get_guilds)
 import mysql.connector
-
-# Using this class as return type for get_stats function
-
 
 def get_xp(user_id: str):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
@@ -32,7 +29,11 @@ def get_recent_xp(user_id: str):
     return xp
 
 
-def add_xp(user_id: int, xp: int):
+async def add_xp(user_id: int, xp: int, bot):
+    old_xp = get_recent_xp(user_id)
+    if old_xp + xp > 2000:
+        await add_reward(bot, user_id)
+
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     
@@ -46,3 +47,13 @@ def add_xp(user_id: int, xp: int):
     db.commit()
     sql.close()
 
+async def add_reward(bot, user_id: int):
+    for member in bot.get_all_members():
+        print(f"{member.guild.id} has {member.id}")
+        if member.guild.id in get_guilds() and member.id == user_id:
+            print("Tries to add role")
+            role = get(member.server.roles, name="name of role")
+            await bot.add_roles(member, role)
+
+async def remove_reward(bot, user_id: int):
+    print(f"Remove reward for player {user_id}")
