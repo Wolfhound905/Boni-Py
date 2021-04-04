@@ -22,15 +22,18 @@ steps = [
     step(
         """
         CREATE TABLE user_xp (
-                user_id BIGINT UNSIGNED PRIMARY KEY NOT NULL,
+                id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                user_id BIGINT NOT NULL,
+                timestamp DATETIME NOT NULL,
                 xp INT NOT NULL);
         """,
         "DROP TABLE user_xp;"),
 
-    step("""
-        CREATE TABLE voice_channels (
-                active_vc BIGINT UNSIGNED PRIMARY KEY NOT NULL);
+        step("""
+            CREATE TABLE voice_channels (
+                active_vc bigint(20) UNSIGNED NOT NULL PRIMARY KEY
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         """,
-        "DROP TABLE voice_channels;")
+        "DROP TABLE voice_channels;"),
 
 ]

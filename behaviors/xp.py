@@ -35,7 +35,7 @@ class xp(commands.Cog):
             # add_xp(user_id, give)
             await ctx.send(f"{name.mention} has a total of {get_xp(user_id)} slam points.", allowed_mentions=discord.AllowedMentions.none())
         elif ctx.author.id in admins:
-            add_xp(user_id, give)
+            await add_xp(user_id, give, self.bot)
             await ctx.send(f"Added {give} slam points to {name.mention}. Bringing them to a total of {get_xp(user_id)} slam points.", allowed_mentions=discord.AllowedMentions.none())
         else:
             await ctx.send(hidden=True, content="You do not have permission to edit points. Here are the user's stats")
