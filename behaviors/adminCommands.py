@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds, get_admins
+import os
+import asyncio
 
 guilds = get_guilds()
 admins = get_admins()
@@ -26,8 +28,10 @@ class adminCommands(commands.Cog):
                 for ext in os.listdir("./behaviors/"):
                     if ext.endswith(".py") and not ext.startswith("_"):
                         try:
+
                             self.bot.unload_extension(f"behaviors.{ext[:-3]}")
                             self.bot.load_extension(f"behaviors.{ext[:-3]}")
+
                             embed.add_field(
                                 name=f"Reloaded: `{ext}`",
                                 value='\uFEFF',

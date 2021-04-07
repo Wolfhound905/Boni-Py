@@ -2,7 +2,6 @@ import os
 import discord
 from configuration import (get_user_name, get_password, get_user_name, get_host, get_admins, get_database, get_guilds, get_reward_threshold)
 import mysql.connector
-from pymitter import EventEmitter
 
 def get_xp(user_id: str):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
