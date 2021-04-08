@@ -97,10 +97,11 @@ def stats_transform(rows):
 
     match_result = [x[1] for x in rows]
 
-    streaks = [(key, len(list(group))) for key, group in groupby(match_result)]
+    streaks = [(1,0), (0,0)] # Default vaules for no wins and no losses
+    streaks += [(key, len(list(group))) for key, group in groupby(match_result)]
 
-    win_streak = max(streaks, key=lambda x: x[1] if x[0] == 1 else 0)[1]
-    loss_streak = max(streaks, key=lambda x: x[1] if x[0] == 0 else 0)[1]
+    win_streak = max([x for x in streaks if x[0] == 1], key=lambda x: x[1])[1]
+    loss_streak = max([x for x in streaks if x[0] == 0], key=lambda x: x[1])[1]
     current_streak = streaks[-1]
 
     stats = {
