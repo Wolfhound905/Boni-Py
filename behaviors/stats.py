@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from database.statsdb import get_guild_stats, get_user_stats
 from configuration import get_guilds
+import datetime
 
 #image color stuff
 from io import BytesIO
@@ -13,18 +14,21 @@ from PIL import Image
 guilds = get_guilds()
 
 
+
 class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def average_hexCode():
-        print("test")
-        # resp = requests.get(player.avatar_url)
-        # assert resp.ok
-        # img = Image.open(BytesIO(resp.content))
-        # img2 = img.resize((1, 1))
-        # color = img2.getpixel((0, 0))
-        # print('#{:02x}{:02x}{:02x}'.format(*color))
+    def average_hexCode(self, player):
+        resp = requests.get(player.avatar_url)
+        assert resp.ok
+        img = Image.open(BytesIO(resp.content)).convert("RGB")
+        img2 = img.resize((1, 1))
+        color = img2.getpixel((0, 0))
+        print(color)
+        color = discord.Color.from_rgb(color[0], color[1], color[2])
+        return(color)
+
 
     options = [
         {
@@ -55,16 +59,17 @@ class clubMatches(commands.Cog):
                     if stats['current_streak'][1] == 1: s_or_nah = ""
                     streak_message = f"They have a current loss streak of {stats['current_streak'][1]} game{s_or_nah}." 
 
-                self.average_hexCode()
+                embed_color = self.average_hexCode(player)
 
-                embed=discord.Embed(title="⚽ Stats 🚗", color=0xf6c518)
+                embed=discord.Embed(title="⚽ Stats 🚗", color=embed_color)
                 embed.set_author(name=f"{player.name}'s Season {stats['season']}")
                 embed.set_thumbnail(url=player.avatar_url)
                 embed.add_field(name="Total Wins", value=f"{player.mention} has won {stats['wins']} matches this season", inline=False)
                 embed.add_field(name="Total Losses", value=f"They have lost {stats['losses']} matches :(", inline=False)
                 embed.add_field(name="Match Streak", value=streak_message, inline=False)
                 embed.add_field(name="Max Streaks", value=f"Their best win streak is {stats['win_streak']} and biggest loss streak is {stats['loss_streak']}.", inline=False)
-                embed.set_footer(text="Wording not final :)")
+                embed.set_footer(text="Wording not final :)", icon_url=self.bot.user.avatar_url)
+                embed.timestamp = datetime.datetime.utcnow()
                 await ctx.send(embed=embed)
             else:
                 await ctx.send(f"{player.mention} does not have any data recorded for this season yet.", allowed_mentions=discord.AllowedMentions.none())

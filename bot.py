@@ -30,9 +30,7 @@ async def on_ready():
     print(" Commands ".center(14, "~"))
     for key in commands:
         print(commands[key].name)
-    print("⸻⸻⸻⸻") 
-
-    
+    print("⸻⸻⸻⸻")     
 
 
   
