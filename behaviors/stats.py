@@ -17,6 +17,15 @@ class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def average_hexCode():
+        print("test")
+        # resp = requests.get(player.avatar_url)
+        # assert resp.ok
+        # img = Image.open(BytesIO(resp.content))
+        # img2 = img.resize((1, 1))
+        # color = img2.getpixel((0, 0))
+        # print('#{:02x}{:02x}{:02x}'.format(*color))
+
     options = [
         {
             "name": "player",
@@ -46,8 +55,7 @@ class clubMatches(commands.Cog):
                     if stats['current_streak'][1] == 1: s_or_nah = ""
                     streak_message = f"They have a current loss streak of {stats['current_streak'][1]} game{s_or_nah}." 
 
-                print(player.avatar_url)
-                self.average_hexCode(player.avatar_url)
+                self.average_hexCode()
 
                 embed=discord.Embed(title="⚽ Stats 🚗", color=0xf6c518)
                 embed.set_author(name=f"{player.name}'s Season {stats['season']}")
@@ -83,19 +91,7 @@ class clubMatches(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("There is no data recorded for this season yet.")
-
-
-
-    def average_hexCode(avatar):
-        resp = requests.get(avatar)
-        assert resp.ok
-        img = Image.open(BytesIO(resp.content))
-        img2 = img.resize((1, 1))
-        color = img2.getpixel((0, 0))
-        print('#{:02x}{:02x}{:02x}'.format(*color))
-
-        return(color)
             
-
 def setup(bot):
     bot.add_cog(clubMatches(bot))
+
