@@ -21,8 +21,8 @@ class slamberParty(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        if after.channel.guild.id != 610818618325729281: # This is so we don't spoil the feature!
-            if after.channel and len(after.channel.members) == 4 and after.channel.name == "Mouth Chat":
+        if after.channel and len(after.channel.members) == 4 and after.channel.name == "Mouth Chat":
+            if after.channel.guild.id != 610818618325729281: # This is so we don't spoil the feature!
                 guild = after.channel.guild
                 category = self.get_category_by_name(guild, "Voice Channels")
                 channel = await guild.create_voice_channel("Slamber Party", category=category)
