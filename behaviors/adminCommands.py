@@ -80,6 +80,19 @@ class adminCommands(commands.Cog):
                         )
                 await ctx.send(embed=embed)
 
+    @commands.command(
+        name="status", description="./status <playing, listening> <input>    remember that listening already has `to` by default"
+    )
+    @commands.is_owner()
+    async def status(self, ctx, arg, *, args):
+        if arg == "playing":
+            activity = discord.ActivityType.playing
+        elif arg == "listening":
+            activity = discord.ActivityType.listening
+
+        activity = discord.Activity(name=args, type=activity)
+        await self.bot.change_presence(activity=activity)
+
     # @commands.command(name="New Season")
     # async def new_season(self, ctx):
     #     """ Creates a new season "./new_season" """
