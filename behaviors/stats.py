@@ -53,17 +53,18 @@ class clubMatches(commands.Cog):
 
                 wins: int = stats['wins']
                 losses: int = stats['losses']
+                current_streak: int = stats['current_streak']
 
                 embed_color = self.pfp_embedColor(player)
-                embed = discord.Embed(title="User Stats", colour=embed_color, description="You can other's stats with `/stats player: @person` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
+                embed = discord.Embed(title="User Stats", color=embed_color, description="You can view other's stats with `/stats player: @person` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
                 embed.set_thumbnail(url=player.avatar_url)
                 embed.set_author(name=f"{player.name}'s Season {stats['season']}", icon_url=player.avatar_url)
                 embed.add_field(name="Wins", value=stats['wins'], inline=True)
                 embed.add_field(name="Losses", value=stats['losses'], inline=True)
                 embed.add_field(name="Win Percentage", value=f"{round(((wins / (wins + losses)) * 100), 2)}%", inline=True)
-                embed.add_field(name="Current Streak", value=stats['current_streak'][1], inline=True)
-                embed.add_field(name="Win Streak", value=stats['win_streak'], inline=True)
-                embed.add_field(name="Loss Streak", value=stats['loss_streak'], inline=True)
+                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[1] >= 2 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[1] >= 2 else ' loss')}", inline=True)
+                embed.add_field(name="Best Win Streak", value=stats['win_streak'], inline=True)
+                embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
                 embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
                 await ctx.send(embed=embed)
 
@@ -76,16 +77,17 @@ class clubMatches(commands.Cog):
                 
                 wins: int = stats['wins']
                 losses: int = stats['losses']
+                current_streak: int = stats['current_streak']
 
-                embed = discord.Embed(title="Server Stats", colour=0xf6c518, description="View our stats any time with `/stats` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
+                embed = discord.Embed(title="Server Stats", color=0xf6c518, description="View our stats any time with `/stats` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
                 embed.set_thumbnail(url=ctx.guild.icon_url)
                 embed.set_author(name=f"Slambonis Season {stats['season']}", icon_url=ctx.guild.icon_url)
                 embed.add_field(name="Wins", value=stats['wins'], inline=True)
                 embed.add_field(name="Losses", value=stats['losses'], inline=True)
                 embed.add_field(name="Win Percentage", value=f"{round(((wins / (wins + losses)) * 100), 2)}%", inline=True)
-                embed.add_field(name="Current Streak", value=stats['current_streak'][1], inline=True)
-                embed.add_field(name="Win Streak", value=stats['win_streak'], inline=True)
-                embed.add_field(name="Loss Streak", value=stats['loss_streak'], inline=True)
+                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[0] > 1 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[0] > 1 else ' loss')}", inline=True)
+                embed.add_field(name="Best Win Streak", value=stats['win_streak'], inline=True)
+                embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
                 embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
                 await ctx.send(embed=embed)
 
