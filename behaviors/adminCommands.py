@@ -89,6 +89,8 @@ class adminCommands(commands.Cog):
             activity = discord.ActivityType.playing
         elif arg == "listening":
             activity = discord.ActivityType.listening
+        elif arg == "watching":
+            activity = discord.ActivityType.watching
 
         activity = discord.Activity(name=args, type=activity)
         await self.bot.change_presence(activity=activity)

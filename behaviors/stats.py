@@ -85,7 +85,7 @@ class clubMatches(commands.Cog):
                 embed.add_field(name="Wins", value=stats['wins'], inline=True)
                 embed.add_field(name="Losses", value=stats['losses'], inline=True)
                 embed.add_field(name="Win Percentage", value=f"{round(((wins / (wins + losses)) * 100), 2)}%", inline=True)
-                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[0] > 1 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[0] > 1 else ' loss')}", inline=True)
+                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[1] >= 2 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[1] >= 2 else ' loss')}", inline=True)
                 embed.add_field(name="Best Win Streak", value=stats['win_streak'], inline=True)
                 embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
                 embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
