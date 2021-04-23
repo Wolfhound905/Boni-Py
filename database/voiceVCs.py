@@ -20,13 +20,13 @@ def get_voice_channels() -> list:
     return active_vc
     sql.close()
     # If no rows exist then raise an error
-    raise Exception("No rows in stats to read")
+    raise Exception("No rows to read")
 
-def add_vc(channel_id):
+def add_vc(active_vc, message_channel_id, message_id):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute(f"""
-    INSERT INTO voice_channels (active_vc) values ({channel_id})
+    INSERT INTO voice_channels (active_vc, channel_id, message_id) values ({active_vc}, {message_channel_id}, {message_id})
     """)
     db.commit()
     sql.close()
@@ -35,7 +35,20 @@ def remove_vc(delete_vc):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute(f"""
+    SELECT channel_id, message_id 
+    FROM voice_channels
+    WHERE active_vc={delete_vc};
+    """)
+    IDs = sql.fetchall()
+    message_id = IDs[0][1]
+    channel_id = IDs[0][0]
+    sql.execute(f"""
     DELETE FROM voice_channels WHERE active_vc={delete_vc}
     """)
     db.commit()
+    message = {
+        "id": message_id,
+        "channel": channel_id
+    }
+    return message
     sql.close()

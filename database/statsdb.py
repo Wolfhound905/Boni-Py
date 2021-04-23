@@ -30,9 +30,9 @@ def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, p
     members_list = []
     members_list.append(player_1.id)
     members_list.append(player_2.id)
-    if player_3 != None:
+    if player_3 is not None:
         members_list.append(player_3.id)
-    if player_4 != None:
+    if player_4 is not None:
         members_list.append(player_4.id)
     members_list = list(set(members_list))
 
@@ -64,7 +64,7 @@ def get_guild_stats(id: int = None):
     rows = sql.fetchall()
     sql.close()
 
-    stats = stats_transform(rows)
+    stats = stats_transform(rows) if rows != [] else None
 
     return(stats)
 
@@ -85,7 +85,7 @@ def get_user_stats(uid, sid: int = None):
     rows = sql.fetchall()
     sql.close()
 
-    stats = stats_transform(rows)
+    stats = stats_transform(rows) if rows != [] else None
 
     return(stats)
     

@@ -20,19 +20,17 @@ bot.load_extension("behaviors.welcome")
 bot.load_extension("behaviors.xp")
 bot.load_extension("behaviors.slamberParty")
 bot.load_extension("behaviors.stats")
-bot.load_extension("behaviors.rewardRemover")
 
 @bot.event
 async def on_ready():
+    bot.load_extension("behaviors.rewardRemover")
     print("ready")
     commands = slash.commands
     await bot.change_presence(activity=activity)
     print(" Commands ".center(14, "~"))
     for key in commands:
         print(commands[key].name)
-    print("⸻⸻⸻⸻") 
-
-    
+    print("⸻⸻⸻⸻")     
 
 
   

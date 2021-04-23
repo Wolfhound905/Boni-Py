@@ -3,14 +3,31 @@ from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from database.statsdb import get_guild_stats, get_user_stats
 from configuration import get_guilds
+import datetime
+
+#image color stuff
+from io import BytesIO
+import requests
+from PIL import Image
 
 
 guilds = get_guilds()
 
 
+
 class clubMatches(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    def pfp_embedColor(self, player):
+        resp = requests.get(player.avatar_url)
+        assert resp.ok
+        img = Image.open(BytesIO(resp.content)).convert("RGB")
+        img2 = img.resize((1, 1))
+        color = img2.getpixel((0, 0))
+        color = discord.Color.from_rgb(color[0], color[1], color[2])
+        return(color)
+
 
     options = [
         {
@@ -30,47 +47,54 @@ class clubMatches(commands.Cog):
     @cog_ext.cog_slash(name="stats", options=options, description='Just say /stats to view our current stats!', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, player: discord.Member = None, season: int = None):
 
-        if player != None:
+        if player is not None:
             stats = get_user_stats(player.id, season)
-            
-            s_or_nah = "s"
-            if stats['current_streak'][0] == 1:
-                if stats['current_streak'][1] == 1: s_or_nah = ""
-                streak_message = f"They have a current win streak of {stats['current_streak'][1]} game{s_or_nah}." 
-            else: 
-                if stats['current_streak'][1] == 1: s_or_nah = ""
-                streak_message = f"They have a current loss streak of {stats['current_streak'][1]} game{s_or_nah}." 
+            if stats is not None:
 
-            embed=discord.Embed(title="⚽ Stats 🚗", color=0xf6c518)
-            embed.set_author(name=f"Slambonis Season {stats['season']}")
-            embed.set_thumbnail(url=player.avatar_url)
-            embed.add_field(name="Total Wins", value=f"{player.mention} has won {stats['wins']} matches this season", inline=False)
-            embed.add_field(name="Total Losses", value=f"They have lost {stats['losses']} matches :(", inline=False)
-            embed.add_field(name="Match Streak", value=streak_message, inline=False)
-            embed.add_field(name="Max Streaks", value=f"Their best win streak is {stats['win_streak']} and biggest loss streak is {stats['loss_streak']}.", inline=False)
-            embed.set_footer(text="Wording not final :)")
-            await ctx.send(embed=embed)
+                wins: int = stats['wins']
+                losses: int = stats['losses']
+                current_streak: int = stats['current_streak']
+
+                embed_color = self.pfp_embedColor(player)
+                embed = discord.Embed(title="User Stats", color=embed_color, description="You can view other's stats with `/stats player: @person` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
+                embed.set_thumbnail(url=player.avatar_url)
+                embed.set_author(name=f"{player.name}'s Season {stats['season']}", icon_url=player.avatar_url)
+                embed.add_field(name="Wins", value=stats['wins'], inline=True)
+                embed.add_field(name="Losses", value=stats['losses'], inline=True)
+                embed.add_field(name="Win Percentage", value=f"{round(((wins / (wins + losses)) * 100), 2)}%", inline=True)
+                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[1] >= 2 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[1] >= 2 else ' loss')}", inline=True)
+                embed.add_field(name="Best Win Streak", value=stats['win_streak'], inline=True)
+                embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
+                embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
+                await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"{player.mention} does not have any data recorded for this season yet.", allowed_mentions=discord.AllowedMentions.none())
 
         else:
             stats = get_guild_stats(season)
-            s_or_nah = "s"
-            if stats['current_streak'][0] == 1:
-                if stats['current_streak'][1] == 1: s_or_nah = ""
-                streak_message = f"We have a current win streak of {stats['current_streak'][1]} game{s_or_nah}." 
-            else: 
-                if stats['current_streak'][1] == 1: s_or_nah = ""
-                streak_message = f"We have a current loss streak of {stats['current_streak'][1]} game{s_or_nah}." 
+            if stats is not None:
+                
+                wins: int = stats['wins']
+                losses: int = stats['losses']
+                current_streak: int = stats['current_streak']
+
+                embed = discord.Embed(title="Server Stats", color=0xf6c518, description="View our stats any time with `/stats` \n ⸻⸻⸻⸻⸻⸻⸻⸻", timestamp=datetime.datetime.utcnow())
+                embed.set_thumbnail(url=ctx.guild.icon_url)
+                embed.set_author(name=f"Slambonis Season {stats['season']}", icon_url=ctx.guild.icon_url)
+                embed.add_field(name="Wins", value=stats['wins'], inline=True)
+                embed.add_field(name="Losses", value=stats['losses'], inline=True)
+                embed.add_field(name="Win Percentage", value=f"{round(((wins / (wins + losses)) * 100), 2)}%", inline=True)
+                embed.add_field(name="Current Streak", value=f"{current_streak[1]}{(' wins' if current_streak[1] >= 2 else ' win') if current_streak[0] == 1 else (' losses' if current_streak[1] >= 2 else ' loss')}", inline=True)
+                embed.add_field(name="Best Win Streak", value=stats['win_streak'], inline=True)
+                embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
+                embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
+                await ctx.send(embed=embed)
+
+
+            else:
+                await ctx.send("There is no data recorded for this season yet.")
             
-            embed=discord.Embed(title="⚽ Stats 🚗", color=0xf6c518)
-            embed.set_author(name=f"Slambonis Season {stats['season']}")
-            embed.set_thumbnail(url="https://cdn.discordapp.com/icons/610818618325729281/a39b2a8d628ff0a1a20caf44c8e802e5.png")
-            embed.add_field(name="Total Wins", value=f"So far we have won {stats['wins']} matches this season", inline=False)
-            embed.add_field(name="Total Losses", value=f"We have lost {stats['losses']} matches :(", inline=False)
-            embed.add_field(name="Match Streak", value=streak_message, inline=False)
-            embed.add_field(name="Max Streaks", value=f"Our best win streak is {stats['win_streak']} and our biggest loss streak is {stats['loss_streak']}.", inline=False)
-            embed.set_footer(text="Wording not final :)")
-            await ctx.send(embed=embed)
-
-
 def setup(bot):
     bot.add_cog(clubMatches(bot))
+
