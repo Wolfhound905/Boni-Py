@@ -49,21 +49,26 @@ class CreateVC(commands.Cog):
                 await ctx.respond(await ctx.send_hidden("Incorrect member cap on channel!\n1-99 is the vailid range for a member cap."))
                 return
             channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category)
-            await ctx.send(f"I created the voice channel `{channel_name}`!")
-            channel_id = str(channel.id)
-            add_vc(channel_id)
+            response = await ctx.send(f"I created the voice channel {channel.mention}!")
+            add_vc(channel.id, response.channel.id, response.id)
             await ctx.author.move_to(channel=channel)
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if len(get_voice_channels()) > 0:
             if before.channel is not None:
-                if before.channel.id != 610818618325729285:  # DO NOT REMOVE!!!!!
-                    if before.channel.id in get_voice_channels():
-                        if len(before.channel.members) == 0:
-                            await before.channel.delete()
-                            delete_vc = str(before.channel.id)
-                            remove_vc(delete_vc)
+                if before.channel.id in get_voice_channels():
+                    if len(before.channel.members) == 0:
+                        await before.channel.delete()
+                        delete_vc = str(before.channel.id)
+                        message = remove_vc(delete_vc)
+                        message_id: int = message['id']
+                        channel_id: int = message['channel']
+                        channel = self.bot.get_channel(channel_id)
+                        message = channel.get_partial_message(message_id)
+                        await message.edit(content=f"Everybody left `{before.channel.name}`` so I deleted it.")
+
+                        
 
 
 def setup(bot):
