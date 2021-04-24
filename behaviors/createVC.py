@@ -40,14 +40,15 @@ class CreateVC(commands.Cog):
     @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap=0):
         voice_state = ctx.author.voice
-        if voice_state == None:
+        if voice_state is None:
             await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
         else:
             guild = ctx.guild
             category = self.get_category_by_name(guild, "Voice Channels")
-            if member_cap >= 100:
-                await ctx.respond(await ctx.send_hidden("Incorrect member cap on channel!\n1-99 is the vailid range for a member cap."))
+            if member_cap >= 100 or member_cap <= -1:
+                await ctx.send(hidden=True, content=f"`{member_cap}` is out of range.\n1-99 is the vailid range for voice channel member caps.")
                 return
+            channel_name = (channel_name[:97] + '...') if len(channel_name) > 97 else channel_name
             channel = await guild.create_voice_channel(channel_name, user_limit=member_cap, category=category)
             response = await ctx.send(f"I created the voice channel {channel.mention}!")
             add_vc(channel.id, response.channel.id, response.id)
@@ -66,9 +67,7 @@ class CreateVC(commands.Cog):
                         channel_id: int = message['channel']
                         channel = self.bot.get_channel(channel_id)
                         message = channel.get_partial_message(message_id)
-                        await message.edit(content=f"Everybody left `{before.channel.name}`` so I deleted it.")
-
-                        
+                        await message.edit(content=f"Everybody left `{before.channel.name}` so I deleted it.")
 
 
 def setup(bot):
