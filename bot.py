@@ -7,7 +7,7 @@ from configuration import get_token, get_guilds
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix="./", intents=intents)
-slash = SlashCommand(bot, sync_commands=False, override_type = True)
+slash = SlashCommand(bot, sync_commands=True, override_type = True)
 activity = discord.Activity(name='on the ice rink', type=discord.ActivityType.playing)
 
 
@@ -20,6 +20,7 @@ bot.load_extension("behaviors.welcome")
 bot.load_extension("behaviors.xp")
 bot.load_extension("behaviors.slamberParty")
 bot.load_extension("behaviors.stats")
+bot.load_extension("behaviors.activities")
 
 @bot.event
 async def on_ready():

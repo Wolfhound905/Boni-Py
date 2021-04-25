@@ -31,7 +31,7 @@ def add_vc(active_vc, message_channel_id, message_id):
     db.commit()
     sql.close()
 
-def remove_vc(delete_vc):
+def get_command_message(delete_vc):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute(f"""
@@ -42,13 +42,17 @@ def remove_vc(delete_vc):
     IDs = sql.fetchall()
     message_id = IDs[0][1]
     channel_id = IDs[0][0]
-    sql.execute(f"""
-    DELETE FROM voice_channels WHERE active_vc={delete_vc}
-    """)
-    db.commit()
     message = {
         "id": message_id,
         "channel": channel_id
     }
     return message
+
+def remove_vc(delete_vc):
+    db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+    sql.execute(f"""
+    DELETE FROM voice_channels WHERE active_vc={delete_vc}
+    """)
+    db.commit()
     sql.close()

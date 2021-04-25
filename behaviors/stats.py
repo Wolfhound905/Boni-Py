@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
-from database.statsdb import get_guild_stats, get_user_stats
+from database.statsdb import get_guild_stats, get_user_stats, update_users
 from configuration import get_guilds
 import datetime
 
@@ -46,7 +46,7 @@ class clubMatches(commands.Cog):
 
     @cog_ext.cog_slash(name="stats", options=options, description='Just say /stats to view our current stats!', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, player: discord.Member = None, season: int = None):
-
+        update_users(ctx.guild.members)
         if player is not None:
             stats = get_user_stats(player.id, season)
             if stats is not None:

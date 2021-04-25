@@ -4,6 +4,7 @@ from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds, get_admins
 import os
 import asyncio
+import re
 
 guilds = get_guilds()
 admins = get_admins()
@@ -95,16 +96,17 @@ class adminCommands(commands.Cog):
         activity = discord.Activity(name=args, type=activity)
         await self.bot.change_presence(activity=activity)
 
-    # @commands.command(name="New Season")
-    # async def new_season(self, ctx):
-    #     """ Creates a new season "./new_season" """
-    #     if ctx.author.id in admins:
-    #         increment_new_season()
-    #         stats = get_stats()
-    #         season = str(stats.season)
-    #         await ctx.send(f"Season {season} was added to the database.")
-    #     else:
-    #         await ctx.send("Sorry, you may not use this command.")
+    @commands.command(
+        name="members", description="get members"
+    )
+    @commands.is_owner()
+    async def members(self, ctx):
+        guild_members = ctx.guild.members
+        for Member in guild_members:
+            if not Member.bot: await ctx.send(Member.avatar_url)
+        
+        
+
 
 def setup(bot):
     bot.add_cog(adminCommands(bot))

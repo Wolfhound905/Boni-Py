@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 import random
-from database.statsdb import add_match, get_guild_stats
+from database.statsdb import add_match, get_guild_stats, update_users
 from configuration import get_guilds
 from database.user_xp import add_xp
 
@@ -96,14 +96,14 @@ class clubMatches(commands.Cog):
 
         if match == "win":
             add_match(True, player_1, player_2, player_3, player_4, overtime)
-
+            update_users(ctx.guild.members)
             stats = get_guild_stats()
             message = self._get_message(stats['win_streak'], self.win_messages)
             await ctx.send(f"{message} \nCurrent win streak is: {str(stats['current_streak'][1])}")
 
         elif match == "loss":
             add_match(False, player_1, player_2, player_3, player_4, overtime)
-
+            update_users(ctx.guild.members)
             stats = get_guild_stats()
             message = self._get_message(stats['loss_streak'], self.loss_messages)
             await ctx.send(f"{message} \nCurrent loss streak is: {str(stats['current_streak'][1])}")

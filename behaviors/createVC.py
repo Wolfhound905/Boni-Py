@@ -5,7 +5,8 @@ import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
 from configuration import get_guilds
-from database.voiceVCs import get_voice_channels, add_vc, remove_vc
+from database.voiceVCs import get_voice_channels, add_vc, remove_vc, get_command_message
+import asyncio
 
 guilds = get_guilds()
 
@@ -37,6 +38,9 @@ class CreateVC(commands.Cog):
                 break
         return category
 
+
+
+
     @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids=guilds)
     async def group_say(self, ctx: SlashContext, channel_name: str, member_cap=0):
         voice_state = ctx.author.voice
@@ -54,20 +58,42 @@ class CreateVC(commands.Cog):
             add_vc(channel.id, response.channel.id, response.id)
             await ctx.author.move_to(channel=channel)
 
+
+    def get_message(self, message_id):
+        message = get_command_message(message_id)
+        message_id: int = message['id']
+        channel_id: int = message['channel']
+        channel = self.bot.get_channel(channel_id)
+        message = channel.get_partial_message(message_id)
+        return message
+
+
+    async def channel_cooldown(self, channel_id):
+        message = self.get_message(channel_id)
+        x = 10
+        while x > 0:
+            await message.edit(content=f"Time left: {x} seconds")
+            x = x -2
+            await asyncio.sleep(2)
+
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if len(get_voice_channels()) > 0:
             if before.channel is not None:
                 if before.channel.id in get_voice_channels():
                     if len(before.channel.members) == 0:
-                        await before.channel.delete()
-                        delete_vc = str(before.channel.id)
-                        message = remove_vc(delete_vc)
-                        message_id: int = message['id']
-                        channel_id: int = message['channel']
-                        channel = self.bot.get_channel(channel_id)
-                        message = channel.get_partial_message(message_id)
-                        await message.edit(content=f"Everybody left `{before.channel.name}` so I deleted it.")
+                        await self.channel_cooldown(before.channel.id)
+                        if len(before.channel.members) == 0:
+                            await before.channel.delete()
+                            message = self.get_message(before.channel.id)
+                            remove_vc(before.channel.id)
+                            await message.edit(content=f"Everybody left `{before.channel.name}` so I deleted it.")
+                        else:
+                            message = self.get_message(before.channel.id)
+                            await message.edit(content=f"I saved `{before.channel.name}` because you came back.")
+
+
 
 
 def setup(bot):

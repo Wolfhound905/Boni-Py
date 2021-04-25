@@ -8,6 +8,20 @@ from typing import Tuple
 
 # Using this class as return type for get_stats function
 
+def update_users(guild_members):
+    db = mysql.connector.connect(user=get_user_name(
+    ), password=get_password(), host=get_host(), database=get_database())
+    sql = db.cursor()
+
+    for Member in guild_members:
+        if not Member.bot:
+            sql.execute(f"""
+            REPLACE INTO users(id, name, avatar_url) values("{Member.id}", "{Member.name}", "{Member.avatar_url}")
+            """)
+    db.commit()
+    sql.close()
+
+
 
 def add_match(match: bool, player_1: discord.Member, player_2: discord.Member, player_3: discord.Member = None, player_4: discord.Member = None, overtime: bool = None):
     db = mysql.connector.connect(user=get_user_name(
