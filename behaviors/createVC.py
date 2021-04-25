@@ -11,7 +11,7 @@ import asyncio
 guilds = get_guilds()
 
 
-class CreateVC(commands.Cog):
+class createVC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -97,4 +97,4 @@ class CreateVC(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(CreateVC(bot))
+    bot.add_cog(createVC(bot))
