@@ -9,6 +9,7 @@ guilds = get_guilds()
 class helpMenu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
      
     @cog_ext.cog_slash(name="help", description='Use this command and I will give you the answers to life.', guild_ids=guilds)
     async def group_say(self, ctx: SlashContext):
@@ -21,7 +22,6 @@ class helpMenu(commands.Cog):
         embed.add_field(name="/xp", value="View a members Slam Points™\n    Example: `/xp person:@Boni`", inline=False)
         embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
         await ctx.send(embed=embed)     
-
 
 def setup(bot):
     bot.add_cog(helpMenu(bot))
