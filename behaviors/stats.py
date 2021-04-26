@@ -4,7 +4,6 @@ from discord_slash import cog_ext, SlashContext
 from database.statsdb import get_guild_stats, get_user_stats, update_users
 from configuration import get_guilds
 import datetime
-from discord_buttons import DiscordButton, Button, ButtonStyle, InteractionType
 
 
 #image color stuff
