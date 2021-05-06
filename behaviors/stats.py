@@ -4,6 +4,7 @@ from discord_slash import cog_ext, SlashContext
 from database.statsdb import get_guild_stats, get_user_stats, update_users
 from configuration import get_guilds
 import datetime
+import asyncio
 
 
 #image color stuff
@@ -46,7 +47,8 @@ class clubMatches(commands.Cog):
     ]
 
     @cog_ext.cog_slash(name="stats", options=options, description='Just say /stats to view our current stats!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, player: discord.Member = None, season: int = None):
+    async def stats(self, ctx: SlashContext, player: discord.Member = None, season: int = None):
+        await ctx.defer()
         update_users(ctx.guild.members)
         if player is not None:
             stats = get_user_stats(player.id, season)
@@ -68,7 +70,7 @@ class clubMatches(commands.Cog):
                 embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
                 embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
                 await ctx.send(embed=embed)
-
+                
             else:
                 await ctx.send(f"{player.mention} does not have any data recorded for this season yet.", allowed_mentions=discord.AllowedMentions.none())
 
@@ -91,7 +93,6 @@ class clubMatches(commands.Cog):
                 embed.add_field(name="Worst Loss Streak", value=stats['loss_streak'], inline=True)
                 embed.set_footer(text="Keep on slamin'", icon_url=self.bot.user.avatar_url)
                 await ctx.send(embed=embed)
-
 
             else:
                 await ctx.send("There is no data recorded for this season yet.")

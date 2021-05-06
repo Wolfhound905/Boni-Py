@@ -1,11 +1,8 @@
 import discord
 from discord.ext import commands
-from discord_slash import cog_ext, SlashContext
-from configuration import get_guilds
-from database.voiceVCs import get_voice_channels, add_vc, remove_vc
-
-guilds = get_guilds()
-
+from discord import utils
+import asyncio
+from database.voiceVCs import (get_voice_channels, add_vc, remove_vc)
 
 class slamberParty(commands.Cog):
     def __init__(self, bot):
@@ -19,19 +16,40 @@ class slamberParty(commands.Cog):
                 break
         return category
 
+    async def start_countdown(self):
+        await asyncio.sleep(300)
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        if after.channel and len(after.channel.members) == 4 and after.channel.name == "Mouth Chat":
-            if after.channel.guild.id != 610818618325729281: # This is so we don't spoil the feature!
-                guild = after.channel.guild
-                category = self.get_category_by_name(guild, "Voice Channels")
-                channel = await guild.create_voice_channel("Slamber Party", category=category)
-                channel_id = str(channel.id)
-                add_vc(channel_id)
-                for members in after.channel.members:
-                    await members.move_to(channel=channel)
-        
+        if after.channel:
+            if after.channel.name == "Slamber Party":
+                if len(after.channel.members) <= 3:
+                    await self.start_countdown()
+                    if len(after.channel.members) <= 3 and after.channel:
+                        mouth_chat = discord.utils.get(after.channel.guild.channels, name="Mouth Chat") 
+                        for member in after.channel.members:
+                            await member.move_to(mouth_chat)
+                        await after.channel.delete()
+                        remove_vc(after.channel.id)
 
+            else:
+                if after.channel and len(after.channel.members) == 4 and after.channel.name == "Mouth Chat":
+                    category = self.get_category_by_name(after.channel.guild, "Voice Channels")
+                    await after.channel.guild.create_voice_channel(name="Mouth Chat", category=category, position=0)
+                    await asyncio.sleep(1)
+                    await after.channel.edit(name="Slamber Party", position=1)
+                    add_vc(1, after.channel.id, 0, 0)
+                    
+        elif before.channel:
+            if before.channel.name == "Slamber Party":
+                if len(before.channel.members) <= 3:
+                    await self.start_countdown()
+                    if len(before.channel.members) <= 3 and before.channel:
+                        mouth_chat = discord.utils.get(before.channel.guild.channels, name="Mouth Chat")
+                        for member in before.channel.members:
+                            await member.move_to(mouth_chat)
+                        await before.channel.delete()
+                        remove_vc(before.channel.id)
 
 
 def setup(bot):

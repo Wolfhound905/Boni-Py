@@ -5,14 +5,17 @@ import mysql.connector
 
 
 
-def get_voice_channels() -> list:
+def get_voice_channels(slamber) -> list:
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     # Example: "active_vc" is row[0]
-    sql.execute(
-        "SELECT active_vc FROM voice_channels")
+    # Slamber == 0 means that we are not checking for a slamber party vc
+    if slamber == 0:
+        sql.execute("SELECT active_vc FROM voice_channels WHERE slamber = 0")
+    else:
+        sql.execute("SELECT active_vc FROM voice_channels WHERE slamber = 1")
+    
     rows = sql.fetchall()
-
     active_vc = []
 
     for row in rows:
@@ -22,11 +25,11 @@ def get_voice_channels() -> list:
     # If no rows exist then raise an error
     raise Exception("No rows to read")
 
-def add_vc(active_vc, message_channel_id, message_id):
+def add_vc(slamber, active_vc, message_channel_id, message_id):
     db = mysql.connector.connect(user=get_user_name(), password=get_password(), host=get_host(), database=get_database())
     sql = db.cursor()
     sql.execute(f"""
-    INSERT INTO voice_channels (active_vc, channel_id, message_id) values ({active_vc}, {message_channel_id}, {message_id})
+    INSERT INTO voice_channels (slamber, active_vc, channel_id, message_id) values ({slamber}, {active_vc}, {message_channel_id}, {message_id})
     """)
     db.commit()
     sql.close()

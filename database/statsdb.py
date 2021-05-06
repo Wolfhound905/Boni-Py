@@ -14,7 +14,7 @@ def update_users(guild_members):
     sql = db.cursor()
 
     for Member in guild_members:
-        if not Member.bot:
+        if not Member.bot and Member.guild.id == 610818618325729281:
             sql.execute(f"""
             REPLACE INTO users(id, name, avatar_url) values("{Member.id}", "{Member.name}", "{Member.avatar_url}")
             """)

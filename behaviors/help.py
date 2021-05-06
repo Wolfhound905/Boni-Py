@@ -12,7 +12,7 @@ class helpMenu(commands.Cog):
 
      
     @cog_ext.cog_slash(name="help", description='Use this command and I will give you the answers to life.', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext):
+    async def help(self, ctx: SlashContext):
 
         embed = discord.Embed(title="Help Menu", description="A list of all slash commands to use with Boni", color=0xf6c518)
         embed.set_thumbnail(url=self.bot.user.avatar_url)
