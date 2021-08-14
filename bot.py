@@ -33,6 +33,5 @@ async def on_ready():
         print(commands[key].name)
     print("⸻⸻⸻⸻")     
 
-
   
 bot.run(get_token())

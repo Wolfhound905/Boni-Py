@@ -30,6 +30,7 @@ class xp(commands.Cog):
 
     @cog_ext.cog_slash(name="xp", options=options, description='Provide xp to active participents', guild_ids=guilds)
     async def xp_stuff(self, ctx: SlashContext, person: discord.Member, give = 0):
+        ctx.defer()
         user_id = name.id 
         if give == 0:
             # add_xp(user_id, give)

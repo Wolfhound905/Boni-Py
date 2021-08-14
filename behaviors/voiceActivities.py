@@ -54,7 +54,8 @@ class voiceActivities(commands.Cog):
                 return activity
 
     @cog_ext.cog_slash(name="activities", options=options, description='Create a voice channel activity', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, activity_type = None, custom_id = None):
+    async def activities(self, ctx: SlashContext, activity_type = None, custom_id = None):
+        await ctx.defer()
         if activity_type is None and custom_id is None:
             await ctx.send(hidden=True, content="Pick an activity.")
         else:

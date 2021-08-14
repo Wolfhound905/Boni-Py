@@ -91,9 +91,10 @@ class clubMatches(commands.Cog):
     ]
 
     @cog_ext.cog_slash(name="club", options=options, description='Reports wins and losses!', guild_ids=guilds)
-    async def group_say(self, ctx: SlashContext, match: str, player_2: discord.Member, overtime: bool = None, player_3: discord.Member = None, player_4: discord.Member = None):
+    async def club_match(self, ctx: SlashContext, match: str, player_2: discord.Member, overtime: bool = None, player_3: discord.Member = None, player_4: discord.Member = None):
         player_1: discord.Member = ctx.author
-
+        await ctx.defer()
+        
         if match == "win":
             add_match(True, player_1, player_2, player_3, player_4, overtime)
             update_users(ctx.guild.members)
@@ -107,6 +108,7 @@ class clubMatches(commands.Cog):
             stats = get_guild_stats()
             message = self._get_message(stats['loss_streak'], self.loss_messages)
             await ctx.send(f"{message} \nCurrent loss streak is: {str(stats['current_streak'][1])}")
+
         else:
             await ctx.send(hidden=True, content="Incorrect format please use. `/club match:<win/loss>`")
 

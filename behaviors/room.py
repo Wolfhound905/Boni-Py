@@ -43,6 +43,7 @@ class createVC(commands.Cog):
 
     @cog_ext.cog_slash(name="room", options=options, description="Create a temperary vc to chat and slam in!", guild_ids=guilds)
     async def room(self, ctx: SlashContext, channel_name: str, member_cap=0):
+        await ctx.defer()
         voice_state = ctx.author.voice
         if voice_state is None:
             await ctx.send(hidden=True, content="You need to be in Mouth Chat to use this command.")
