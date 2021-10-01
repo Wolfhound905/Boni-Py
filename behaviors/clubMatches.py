@@ -1,6 +1,7 @@
 # This cog is for the reporting of club wins and losses.
 # A user can execute this command with /club match:result
 
+import datetime
 import discord
 from discord.ext import commands
 from discord_slash import cog_ext, SlashContext
@@ -96,18 +97,24 @@ class clubMatches(commands.Cog):
         await ctx.defer()
         
         if match == "win":
-            add_match(True, player_1, player_2, player_3, player_4, overtime)
+            match_id = add_match(True, player_1, player_2, player_3, player_4, overtime)
             update_users(ctx.guild.members)
             stats = get_guild_stats()
             message = self._get_message(stats['win_streak'], self.win_messages)
-            await ctx.send(f"{message} \nCurrent win streak is: {str(stats['current_streak'][1])}")
+
+            embed=discord.Embed(title=message, description=f"Current win streak is: {stats['current_streak'][1]}", timestamp=datetime.datetime.utcnow())
+            embed.set_footer(text=f"Match ID: {match_id}")
+            await ctx.send(embed=embed)
 
         elif match == "loss":
-            add_match(False, player_1, player_2, player_3, player_4, overtime)
+            match_id = add_match(False, player_1, player_2, player_3, player_4, overtime)
             update_users(ctx.guild.members)
             stats = get_guild_stats()
             message = self._get_message(stats['loss_streak'], self.loss_messages)
-            await ctx.send(f"{message} \nCurrent loss streak is: {str(stats['current_streak'][1])}")
+
+            embed=discord.Embed(title=message, description=f"Current loss streak is: {stats['current_streak'][1]}", timestamp=datetime.datetime.utcnow())
+            embed.set_footer(text=f"Match ID: {match_id}")
+            await ctx.send(embed=embed)
 
         else:
             await ctx.send(hidden=True, content="Incorrect format please use. `/club match:<win/loss>`")

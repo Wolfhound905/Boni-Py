@@ -72,3 +72,12 @@ def get_reward_threshold() -> int:
 
 # load enviroment variables on startup
 load_env()
+
+sql_config = {
+    'user': get_user_name(),
+    'password': get_password(),
+    'host': get_host(),
+    'database': get_database(),
+    'autocommit': True,
+    "charset": "utf8mb4",
+}

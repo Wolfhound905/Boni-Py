@@ -18,7 +18,7 @@ bot.load_extension("behaviors.copyCat")
 bot.load_extension("behaviors.adminCommands")
 bot.load_extension("behaviors.welcome")
 bot.load_extension("behaviors.xp")
-bot.load_extension("behaviors.slamberParty")
+# bot.load_extension("behaviors.slamberParty")
 bot.load_extension("behaviors.stats")
 bot.load_extension("behaviors.voiceActivities")
 
@@ -29,8 +29,9 @@ async def on_ready():
     commands = slash.commands
     await bot.change_presence(activity=activity)
     print(" Commands ".center(14, "~"))
-    for key in commands:
-        print(commands[key].name)
+    for key in slash.commands:
+        if key != "context":
+            print(slash.commands[key].name)
     print("⸻⸻⸻⸻")     
 
   
