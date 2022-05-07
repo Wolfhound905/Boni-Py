@@ -1,5 +1,4 @@
 from datetime import datetime
-from os import walk
 from types import NoneType
 from typing import List
 
