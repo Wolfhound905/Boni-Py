@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "boni-py"
+version = "0.1.0"
+description = "Boni is a discord bot for the SLambonis server."
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dis-snek = {git = "https://github.com/Discord-Snake-Pit/Dis-Snek.git", rev = "dev"}
+python-dotenv = "^0.20.0"
+beanie = "^1.11.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
