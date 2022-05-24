@@ -6,9 +6,9 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dis-snek = {git = "https://github.com/Discord-Snake-Pit/Dis-Snek.git", rev = "dev"}
 python-dotenv = "^0.20.0"
 beanie = "^1.11.0"
+naff = {git = "https://github.com/NAFTeam/NAFF.git", rev = "dev"}
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
