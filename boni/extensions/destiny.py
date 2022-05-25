@@ -3,8 +3,8 @@ from random import choice
 
 
 class Destiny(naff.Extension):
-    def __init__(self, bot: naff.Snake):
-        self.bot: naff.Snake = bot
+    def __init__(self, bot: naff.Client):
+        self.bot: naff.Client = bot
 
     @naff.slash_command(name="gambit", description="Who we versing?")
     async def gambit(self, ctx: naff.InteractionContext) -> None:
@@ -18,5 +18,5 @@ class Destiny(naff.Extension):
         await ctx.send(f"I think...\n{choice(sentences)}")
 
 
-def setup(bot: naff.Snake):
+def setup(bot: naff.Client):
     Destiny(bot)

@@ -5,8 +5,8 @@ from boni.utils.rooms import add_room, del_room, get_rooms
 
 
 class Rooms(naff.Extension):
-    def __init__(self, bot: naff.Snake):
-        self.bot: naff.Snake = bot
+    def __init__(self, bot: naff.Client):
+        self.bot: naff.Client = bot
 
     @naff.slash_command(name="room", description="Create a voice channel")
     @naff.slash_option(
@@ -58,5 +58,5 @@ class Rooms(naff.Extension):
                 await del_room(channel.id)
 
 
-def setup(bot: naff.Snake):
+def setup(bot: naff.Client):
     Rooms(bot)

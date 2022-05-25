@@ -26,7 +26,7 @@ async def run() -> None:
         password=get_key(".env", "PASSWORD"),
         port=int(get_key(".env", "PORT")),
     )
-    for extension in get_extensions("./boni/cogs/"):
+    for extension in get_extensions("./boni/extensions/"):
         boni.load_extension(extension)
 
     await boni.astart(get_key(".env", "TOKEN"))

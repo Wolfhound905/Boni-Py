@@ -6,15 +6,15 @@ from asyncio import TimeoutError
 
 from dotenv import get_key
 
-from boni.utils.birthdays import insert_bday, get_bday, get_all_bdays, reply_bday
+from boni.utils.birthdays import insert_bday, get_all_bdays, reply_bday
 
 with open("./boni/utils/birthday_messages.json") as f:
     birthday_messages = json.load(f)
 
 
 class Birthdays(naff.Extension):
-    def __init__(self, bot: naff.Snake):
-        self.bot: naff.Snake = bot
+    def __init__(self, bot: naff.Client):
+        self.bot: naff.Client = bot
         self.bday_channel_id: int = int(get_key(".env", "BIRTHDAY_CHANNEL_ID"))
 
     @naff.slash_command(name="birthday")
@@ -129,5 +129,5 @@ class Birthdays(naff.Extension):
         self.check_bday_task.start()
 
 
-def setup(bot: naff.Snake):
+def setup(bot: naff.Client):
     Birthdays(bot)
