@@ -12,7 +12,8 @@ class Destiny(naff.Extension):
             "**Fallen** on the horizon!",
             "**Vex** on the field!",
             "**Cabal** on the field!",
-            "**Scorn** approaching!"
+            "**Scorn** approaching!",
+            "**Hive**! Bring a sword.",
         ]
 
         await ctx.send(f"I think...\n{choice(sentences)}")
