@@ -78,7 +78,7 @@ class RocketLeague(naff.Extension):
             event_type=naff.ScheduledEventType.EXTERNAL,
             start_time=selected.timestamp - timedelta(minutes=15),
             description=f"{ctx.author.mention} wants to play a {selected.name} tourney! Sign up to get notified before it starts!",
-            external_location=f"{selected.name} at {selected.timestamp.strftime('%I:%M %p')}",
+            external_location=f"{selected.name} in {selected.timestamp.format(naff.TimestampStyles.RelativeTime)}",
             end_time=selected.timestamp + timedelta(minutes=15),
         )
         event_invite = f"https://discord.com/events/{ctx.guild.id}/{event.id}"
