@@ -33,7 +33,7 @@ class RocketLeague(naff.Extension):
         )
 
         select_options = []
-        for tourney in tourneys[:3]:
+        for tourney in tourneys[:5]:
             time_str = tourney.timestamp.strftime("%I:%M %p")
             select_options.append(
                 naff.SelectOption(
