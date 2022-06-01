@@ -20,9 +20,8 @@ class RocketLeague(naff.Extension):
         opt_type=naff.OptionTypes.STRING,
         required=False,
         choices=[
-            naff.SlashCommandChoice("US East", "USE"),
-            naff.SlashCommandChoice("US West", "USW"),
             naff.SlashCommandChoice("Europe", "EU"),
+            naff.SlashCommandChoice("US", "USE"),
         ],
     )
     async def tourneys(self, ctx: naff.InteractionContext, region: str = "USE") -> None:
