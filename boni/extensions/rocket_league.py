@@ -84,7 +84,7 @@ class RocketLeague(naff.Extension):
         event_invite = f"https://discord.com/events/{ctx.guild.id}/{event.id}"
 
         await ctx.edit_origin(
-            f"{ctx.author.mention} wants to play in a tourney.\n Here is [event]({event_invite}) to remind you. Make sure to click **Interested**!",
+            f"<@&698631135919341599> | {ctx.author.mention} wants to play in a tourney.\n Here is [event]({event_invite}) to remind you. Make sure to click **Interested**!",
             components=[],
             embed=[],
         )
