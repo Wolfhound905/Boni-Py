@@ -3,6 +3,7 @@ from random import choice
 
 warehouse_channel_id = 819980437329543180
 
+
 class Destiny(naff.Extension):
     def __init__(self, bot: naff.Client):
         self.bot: naff.Client = bot
@@ -20,12 +21,13 @@ class Destiny(naff.Extension):
 
         if ctx.channel.id != warehouse_channel_id:
             warehouse_channel = await self.bot.fetch_channel(warehouse_channel_id)
-            msg = await warehouse_channel.send(f"{ctx.author.mention} I think...\n{random}")
+            msg = await warehouse_channel.send(
+                f"{ctx.author.mention} I think...\n{random}"
+            )
             await ctx.send(f"I took my guess [here]({msg.jump_url})", ephemeral=True)
             return
         else:
             await ctx.send(f"I think...\n{random}")
-
 
 
 def setup(bot: naff.Client):
