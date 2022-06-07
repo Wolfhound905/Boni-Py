@@ -77,3 +77,10 @@ class Tournament(DictSerializationMixin):
     timestamp: Optional["naff.Timestamp"] = field(
         default="In progress...", repr=True, converter=c_optional(timestamp_converter)
     )
+
+    async def image_bytes(self) -> Optional[bytes]:
+        if self.img == "N/A":
+            return None
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.img) as resp:
+                return await resp.read()
