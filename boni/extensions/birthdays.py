@@ -94,7 +94,8 @@ class Birthdays(naff.Extension):
         user_ids_with_bday = [
             bday.user_id
             for bday in bdays
-            if bday.birthday.day == datetime.now().day
+            if bday.birthday.month == datetime.now().month
+            and bday.birthday.day == datetime.now().day
             and (
                 bday.last_replied.year != datetime.now().year
                 if bday.last_replied
