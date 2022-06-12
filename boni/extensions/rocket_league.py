@@ -9,7 +9,9 @@ class RocketLeague(naff.Extension):
     def __init__(self, bot: naff.Client):
         self.bot: naff.Client = bot
 
-    rl_base_cmd = naff.SlashCommand(name="rocket_league", description="Rocket League commands")
+    rl_base_cmd = naff.SlashCommand(
+        name="rocket_league", description="Rocket League commands"
+    )
 
     @rl_base_cmd.subcommand(
         sub_cmd_name="tourneys", sub_cmd_description="Get upcoming tourneys"
@@ -80,7 +82,7 @@ class RocketLeague(naff.Extension):
             description=f"{ctx.author.mention} wants to play a {selected.name} tourney! Sign up to get notified before it starts!",
             external_location=f"{selected.name} {selected.timestamp.format(naff.TimestampStyles.RelativeTime)}",
             end_time=selected.timestamp + timedelta(minutes=15),
-            cover_image=await selected.image_bytes()
+            cover_image=await selected.image_bytes(),
         )
         event_invite = f"https://discord.com/events/{ctx.guild.id}/{event.id}"
 
