@@ -31,7 +31,7 @@ class Admin(naff.Extension):
 
         rules_embeds = [
             naff.Embed(
-                title="😍 Treat on another with love and respect",
+                title="😍 Treat one another with love and respect",
                 description="No one likes a jerk. Keep the chat clean and don't be using slurs/insults or any other form of harassment. We're all here to have fun, and we're all here to be ourselves.",
                 color="#1e99d7",
             ),
