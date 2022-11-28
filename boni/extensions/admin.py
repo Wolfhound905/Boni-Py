@@ -6,6 +6,25 @@ from dotenv import get_key
 class Admin(naff.Extension):
     def __init__(self, bot: naff.Client):
         self.bot: naff.Client = bot
+        self.platform_roles = {
+            "switch": int(get_key(".env", "SWITCH_ROLE")),
+            "playstation": int(get_key(".env", "PLAYSTATION_ROLE")),
+            "xbox": int(get_key(".env", "XBOX_ROLE")),
+            "pc": int(get_key(".env", "PC_ROLE")),
+        }
+        self.game_roles = {
+            "rocketleague": int(get_key(".env", "ROCKET_LEAGUE_ROLE")),
+            "fortnite": int(get_key(".env", "FORTNITE_ROLE")),
+            "minecraft": int(get_key(".env", "MINECRAFT_ROLE")),
+            "huntshowdown": int(get_key(".env", "HUNT_SHOWDOWN_ROLE")),
+        }
+        self.region_roles = {
+            "uswest": int(get_key(".env", "US_WEST_ROLE")),
+            "uscentral": int(get_key(".env", "US_CENTRAL_ROLE")),
+            "useast": int(get_key(".env", "US_EAST_ROLE")),
+            "eu": int(get_key(".env", "EU_ROLE")),
+            "asia": int(get_key(".env", "ASIA_ROLE")),
+        }
 
     admin_cmd = naff.SlashCommand(
         name="admin",
@@ -15,7 +34,9 @@ class Admin(naff.Extension):
     )
 
     @admin_cmd.subcommand(
-        sub_cmd_name="post_rules", sub_cmd_description="Post rules to channel"
+        sub_cmd_name="rules",
+        sub_cmd_description="Post rules to channel",
+        group_name="post",
     )
     @naff.slash_option(
         name="channel",
@@ -93,6 +114,152 @@ class Admin(naff.Extension):
         else:
             await ctx.author.remove_role(recruitment_role)
             await ctx.edit_origin()
+
+    # Roles in the .env
+    # SWITCH_ROLE=1046197216697647206
+    # PLAYSTATION_ROLE=1046193886386724866
+    # XBOX_ROLE=1046194126930067516
+    # PC_ROLE=1046193588561793024
+
+    # ROCKET_LEAGUE_ROLE=698631135919341599
+    # FORTNITE_ROLE=1046091340812910663
+    # MINECRAFT_ROLE=1046193698725171200
+    # HUNT_SHOWDOWN_ROLE=730027989861007370
+
+    @admin_cmd.subcommand(
+        sub_cmd_name="roles",
+        sub_cmd_description="Post manage roles message",
+        group_name="post",
+    )
+    @naff.slash_option(
+        name="channel",
+        description="Channel to post roles to",
+        opt_type=naff.OptionTypes.CHANNEL,
+        channel_types=[naff.ChannelTypes.GUILD_TEXT],
+        required=True,
+    )
+    async def post_roles(
+        self, ctx: naff.InteractionContext, channel: naff.GuildText
+    ) -> None:
+        content = "Welcome to the locker room! Go ahead and grab your gear and get ready to play some games. We have a few roles you can add to yourself to help us get to know you better. If you have any questions, feel free to ask a moderator or admin. We're here to help!\n\n\u200b"
+
+        switch = naff.StringSelectMenu(
+            options=[
+                naff.SelectOption(
+                    label="PC",
+                    value="pc",
+                    emoji="<:pc:1046642402850517012>",
+                ),
+                naff.SelectOption(
+                    label="Xbox",
+                    value="xbox",
+                    emoji="<:xbox:1046634053840941106>",
+                ),
+                naff.SelectOption(
+                    label="Playstation",
+                    value="playstation",
+                    emoji="<:playstation:1046634875677048842>",
+                ),
+                naff.SelectOption(
+                    label="Switch",
+                    value="switch",
+                    emoji="<:nintendo:1046634892940812348>",
+                ),
+            ],
+            placeholder="Select your platform(s)",
+            min_values=1,
+            max_values=4,
+            custom_id="platform_select",
+        )
+
+        games = naff.StringSelectMenu(
+            options=[
+                naff.SelectOption(
+                    label="Fortnite",
+                    value="fortnite",
+                    emoji="<:fortnite:1046642116186619997>",
+                ),
+                naff.SelectOption(
+                    label="Hunt Showdown",
+                    value="huntshowdown",
+                    emoji="<:huntshowdown:1046642115171590177>",
+                ),
+                naff.SelectOption(
+                    label="Minecraft",
+                    value="minecraft",
+                    emoji="<:minecraft:1046642117390372924>",
+                ),
+                naff.SelectOption(
+                    label="Rocket League",
+                    value="rocketleague",
+                    emoji="<:rocketleague:1046642118300545114>",
+                ),
+            ],
+            placeholder="Select your game(s)",
+            min_values=1,
+            max_values=4,
+            custom_id="game_select",
+        )
+
+        regions = naff.StringSelectMenu(
+            options=[
+                naff.SelectOption(
+                    label="US West",
+                    value="uswest",
+                ),
+                naff.SelectOption(
+                    label="US Central",
+                    value="uscentral",
+                ),
+                naff.SelectOption(
+                    label="US East",
+                    value="useast",
+                ),
+                naff.SelectOption(
+                    label="Europe",
+                    value="eu",
+                ),
+                naff.SelectOption(
+                    label="Asia",
+                    value="asia",
+                ),
+            ],
+            placeholder="Select your region(s)",
+            min_values=1,
+            max_values=1,
+            custom_id="region_select",
+        )
+
+        await channel.send(
+            content=content,
+            components=[[switch], [games], [regions]],
+        )
+        await ctx.send("Sent to: " + channel.mention, ephemeral=True)
+
+    async def toggle_custom_roles(self, ctx: naff.ComponentContext, roles: dict):
+        _roles = roles
+
+        local_author_roles = [role.id for role in ctx.author.roles]
+
+        for role in _roles.values():
+            if role in local_author_roles:
+                local_author_roles.remove(role)
+
+        for role in ctx.values:
+            local_author_roles.append(_roles[role])
+
+        await ctx.author.edit(roles=local_author_roles)
+        await ctx.edit_origin()
+
+    @naff.listen(naff.events.Select)
+    async def toggle_roles(self, event: naff.events.Select) -> None:
+        ctx = event.ctx
+        if ctx.custom_id == "platform_select":
+            await self.toggle_custom_roles(ctx, self.platform_roles)
+        elif ctx.custom_id == "game_select":
+            await self.toggle_custom_roles(ctx, self.game_roles)
+        elif ctx.custom_id == "region_select":
+            await self.toggle_custom_roles(ctx, self.region_roles)
 
 
 def setup(bot: naff.Client):
