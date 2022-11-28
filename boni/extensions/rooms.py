@@ -50,6 +50,8 @@ class Rooms(naff.Extension):
         # Check rooms to see if they are empty
         for room in await get_rooms():
             channel: naff.GuildVoice = await self.bot.fetch_channel(room)
+            if type(channel) is not naff.GuildVoice:
+                continue
             if not channel:
                 await del_room(room)
                 continue

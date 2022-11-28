@@ -13,9 +13,13 @@ python-dateutil = "^2.8.2"
 # To force update to latest
 # "poetry add git+https://github.com/NAFTeam/NAFF.git@dev"
 naff = {git = "https://github.com/NAFTeam/NAFF.git", rev = "dev"}
+orjson = "^3.8.2"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
+
+[tool.poetry.group.dev.dependencies]
+black = {version = "^22.10.0", allow-prereleases = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

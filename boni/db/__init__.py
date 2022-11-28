@@ -10,7 +10,7 @@ BONIDB = None
 async def init(host: str, username: str, password: str, port: int) -> None:
     global CLIENT, BONIDB
     CLIENT = AsyncIOMotorClient(
-        host=host, port=port, username=username, password=password
+        host=host, port=port, username=username, password=password, authSource="boni"
     )
     BONIDB = CLIENT.boni
     await init_beanie(database=BONIDB, document_models=__beanie_models__)

@@ -62,25 +62,25 @@ class Birthdays(naff.Extension):
             components=[confirm_btns],
         )
 
-    @naff.listen(naff.events.Button)
-    async def check_bday(self, event: naff.events.Button) -> None:
-        btn_ctx = event.context
-        if event.context.custom_id.startswith("bday_confirm"):
-            data = event.context.custom_id.split(".")
+    @naff.listen(naff.events.ButtonPressed)
+    async def check_bday(self, event: naff.events.ButtonPressed) -> None:
+        btn_ctx = event.ctx
+        if btn_ctx.custom_id.startswith("bday_confirm"):
+            data = btn_ctx.custom_id.split(".")
             if data[1] == str(btn_ctx.author.id):
                 date_time_obj = datetime.strptime(data[2], "%m/%d/%Y")
                 await insert_bday(btn_ctx.author.id, date_time_obj)
-                await event.context.edit_origin(
+                await btn_ctx.edit_origin(
                     "Great! I'll remember that!", components=[]
                 )
                 return
             else:
                 await btn_ctx.send("This is not your button to click.", ephemeral=True)
                 return
-        else:
-            data = event.context.custom_id.split(".")
+        elif btn_ctx.custom_id.startswith("bday_cancel"):
+            data = btn_ctx.custom_id.split(".")
             if data[1] == str(btn_ctx.author.id):
-                await event.context.edit_origin("Alrighty.", components=[])
+                await btn_ctx.edit_origin("Alrighty.", components=[])
                 return
             else:
                 await btn_ctx.send("This is not your button to click.", ephemeral=True)
