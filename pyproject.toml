@@ -2,7 +2,6 @@
 name = "boni-py"
 version = "0.1.0"
 authors = ["Wolfhound905 <aiden8green@gmail.com>"]
-authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
