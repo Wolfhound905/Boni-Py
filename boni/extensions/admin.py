@@ -115,17 +115,6 @@ class Admin(naff.Extension):
             await ctx.author.remove_role(recruitment_role)
             await ctx.edit_origin()
 
-    # Roles in the .env
-    # SWITCH_ROLE=1046197216697647206
-    # PLAYSTATION_ROLE=1046193886386724866
-    # XBOX_ROLE=1046194126930067516
-    # PC_ROLE=1046193588561793024
-
-    # ROCKET_LEAGUE_ROLE=698631135919341599
-    # FORTNITE_ROLE=1046091340812910663
-    # MINECRAFT_ROLE=1046193698725171200
-    # HUNT_SHOWDOWN_ROLE=730027989861007370
-
     @admin_cmd.subcommand(
         sub_cmd_name="roles",
         sub_cmd_description="Post manage roles message",
@@ -224,7 +213,7 @@ class Admin(naff.Extension):
                     value="asia",
                 ),
             ],
-            placeholder="Select your region(s)",
+            placeholder="Select your region",
             min_values=1,
             max_values=1,
             custom_id="region_select",
@@ -249,7 +238,7 @@ class Admin(naff.Extension):
             local_author_roles.append(_roles[role])
 
         await ctx.author.edit(roles=local_author_roles)
-        await ctx.edit_origin()
+        await ctx.send("Roles updated!", ephemeral=True)
 
     @naff.listen(naff.events.Select)
     async def toggle_roles(self, event: naff.events.Select) -> None:
