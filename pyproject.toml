@@ -1,7 +1,9 @@
 [tool.poetry]
 name = "boni-py"
 version = "0.1.0"
+description = ""
 authors = ["Wolfhound905 <aiden8green@gmail.com>"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
