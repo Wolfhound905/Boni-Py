@@ -1,0 +1,7 @@
+*
+
+!Dockerfile
+!boni/
+!poetry.lock
+!pyproject.toml
+!run.py

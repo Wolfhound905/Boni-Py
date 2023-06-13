@@ -1,36 +1,53 @@
 import json
 from random import choice
-import naff
+from interactions import (
+    Button,
+    ComponentContext,
+    Extension,
+    Client,
+    IntervalTrigger,
+    SlashCommand,
+    Permissions,
+    GuildText,
+    SlashContext,
+    StringSelectMenu,
+    StringSelectOption,
+    Task,
+    slash_command,
+    slash_option,
+    OptionType,
+    ChannelType,
+    Embed,
+    listen,
+    events,
+    SlashCommand,
+)
 from datetime import datetime
-from asyncio import TimeoutError
-
-from dotenv import get_key
 
 from boni.utils.birthdays import insert_bday, get_all_bdays, reply_bday
+from boni.utils.config import load_config
 
 with open("./boni/utils/birthday_messages.json") as f:
     birthday_messages = json.load(f)
 
+config = load_config()
 
-class Birthdays(naff.Extension):
-    def __init__(self, bot: naff.Client):
-        self.bot: naff.Client = bot
-        self.bday_channel_id: int = int(get_key(".env", "BIRTHDAY_CHANNEL_ID"))
 
-    @naff.slash_command(name="birthday")
-    async def birthday(self) -> None:
-        ...
+class Birthdays(Extension):
+    def __init__(self, bot: Client):
+        self.bot: Client = bot
+        self.bday_channel_id: int = config.discord.birthday_channel_id
 
-    # NOTE: this is just to set the base birthday command
+    birthday = SlashCommand(name="birthday", description="Birthday related commands")
 
     @birthday.subcommand("set")
-    @naff.slash_option(
+    @slash_option(
         "birthday",
         "Make sure to format your birthday as MM/DD/YYYY (3/11/2021)",
-        naff.OptionTypes.STRING,
+        OptionType.STRING,
         True,
     )
-    async def birthday_set(self, ctx: naff.InteractionContext, birthday: str) -> None:
+    async def birthday_set(self, ctx: SlashContext, birthday: str) -> None:
         try:
             date_time_obj = datetime.strptime(birthday, "%m/%d/%Y")
         except ValueError:
@@ -47,13 +64,15 @@ class Birthdays(naff.Extension):
             return
 
         confirm_btns = [
-            naff.Button(
-                naff.ButtonStyles.GREEN,
-                "Looks good!",
+            Button(
+                style=Button.Styles.GREEN,
+                label="Looks good!",
                 custom_id=f"bday_confirm.{ctx.author.id}.{birthday}",
             ),
-            naff.Button(
-                naff.ButtonStyles.RED, "Nah", custom_id=f"bday_cancel.{ctx.author.id}"
+            Button(
+                style=Button.Styles.RED,
+                label="Nah",
+                custom_id=f"bday_cancel.{ctx.author.id}",
             ),
         ]
 
@@ -62,8 +81,8 @@ class Birthdays(naff.Extension):
             components=[confirm_btns],
         )
 
-    @naff.listen(naff.events.ButtonPressed)
-    async def check_bday(self, event: naff.events.ButtonPressed) -> None:
+    @listen(events.ButtonPressed)
+    async def check_bday(self, event: events.ButtonPressed) -> None:
         btn_ctx = event.ctx
         if btn_ctx.custom_id.startswith("bday_confirm"):
             data = btn_ctx.custom_id.split(".")
@@ -71,7 +90,7 @@ class Birthdays(naff.Extension):
                 date_time_obj = datetime.strptime(data[2], "%m/%d/%Y")
                 await insert_bday(btn_ctx.author.id, date_time_obj)
                 await btn_ctx.edit_origin(
-                    "Great! I'll remember that!", components=[]
+                    content="Great! I'll remember that!", components=[]
                 )
                 return
             else:
@@ -80,13 +99,13 @@ class Birthdays(naff.Extension):
         elif btn_ctx.custom_id.startswith("bday_cancel"):
             data = btn_ctx.custom_id.split(".")
             if data[1] == str(btn_ctx.author.id):
-                await btn_ctx.edit_origin("Alrighty.", components=[])
+                await btn_ctx.edit_origin(content="Alrighty.", components=[])
                 return
             else:
                 await btn_ctx.send("This is not your button to click.", ephemeral=True)
                 return
 
-    @naff.Task.create(naff.IntervalTrigger(days=1))
+    @Task.create(IntervalTrigger(days=1))
     async def check_bday_task(self) -> None:
         """Check if any users have a birthday today"""
         bdays = await get_all_bdays()
@@ -124,11 +143,11 @@ class Birthdays(naff.Extension):
             [await reply_bday(user_id) for user_id in user_ids_with_bday]
             return
 
-    @naff.listen(naff.events.Startup)
+    @listen(events.Startup)
     async def on_startup(self) -> None:
         await self.check_bday_task()
         self.check_bday_task.start()
 
 
-def setup(bot: naff.Client):
+def setup(bot: Client):
     Birthdays(bot)

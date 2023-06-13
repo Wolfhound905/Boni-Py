@@ -1,35 +1,61 @@
-import naff
+from interactions import (
+    Activity,
+    Button,
+    ComponentContext,
+    Extension,
+    Client,
+    SlashCommand,
+    Permissions,
+    GuildText,
+    SlashContext,
+    StringSelectMenu,
+    StringSelectOption,
+    slash_option,
+    OptionType,
+    ChannelType,
+    Embed,
+    listen,
+    events,
+)
 from random import choice
 from dotenv import get_key
+from boni.utils.logging import logger
+
+from boni.utils.config import load_config
+
+config = load_config()
 
 
-class Admin(naff.Extension):
-    def __init__(self, bot: naff.Client):
-        self.bot: naff.Client = bot
+class Admin(Extension):
+    def __init__(self, bot: Client):
+        self.bot: Client = bot
+
         self.platform_roles = {
-            "switch": int(get_key(".env", "SWITCH_ROLE")),
-            "playstation": int(get_key(".env", "PLAYSTATION_ROLE")),
-            "xbox": int(get_key(".env", "XBOX_ROLE")),
-            "pc": int(get_key(".env", "PC_ROLE")),
-        }
-        self.game_roles = {
-            "rocketleague": int(get_key(".env", "ROCKET_LEAGUE_ROLE")),
-            "fortnite": int(get_key(".env", "FORTNITE_ROLE")),
-            "minecraft": int(get_key(".env", "MINECRAFT_ROLE")),
-            "huntshowdown": int(get_key(".env", "HUNT_SHOWDOWN_ROLE")),
-        }
-        self.region_roles = {
-            "uswest": int(get_key(".env", "US_WEST_ROLE")),
-            "uscentral": int(get_key(".env", "US_CENTRAL_ROLE")),
-            "useast": int(get_key(".env", "US_EAST_ROLE")),
-            "eu": int(get_key(".env", "EU_ROLE")),
-            "asia": int(get_key(".env", "ASIA_ROLE")),
+            "switch": config.roles.switch,
+            "playstation": config.roles.playstation,
+            "xbox": config.roles.xbox,
+            "pc": config.roles.pc,
         }
 
-    admin_cmd = naff.SlashCommand(
+        self.game_roles = {
+            "rocketleague": config.roles.rocket_league,
+            "fortnite": config.roles.fortnite,
+            "minecraft": config.roles.minecraft,
+            "huntshowdown": config.roles.hunt_showdown,
+        }
+
+        self.region_roles = {
+            "uswest": config.roles.us_west,
+            "uscentral": config.roles.us_central,
+            "useast": config.roles.us_east,
+            "eu": config.roles.eu,
+            "asia": config.roles.asia,
+        }
+
+    admin_cmd = SlashCommand(
         name="admin",
         description="Admin commands",
-        default_member_permissions=naff.Permissions.ADMINISTRATOR,
+        default_member_permissions=Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
 
@@ -38,68 +64,67 @@ class Admin(naff.Extension):
         sub_cmd_description="Post rules to channel",
         group_name="post",
     )
-    @naff.slash_option(
+    @slash_option(
         name="channel",
         description="Channel to post rules to",
-        opt_type=naff.OptionTypes.CHANNEL,
-        channel_types=[naff.ChannelTypes.GUILD_TEXT],
+        opt_type=OptionType.CHANNEL,
+        channel_types=[ChannelType.GUILD_TEXT],
         required=True,
     )
-    async def post_rules(
-        self, ctx: naff.InteractionContext, channel: naff.GuildText
-    ) -> None:
+    async def post_rules(self, ctx: SlashContext, channel: GuildText) -> None:
         welcome = "What The Slambonis are about isn't hard to understand. Yes, we game together, but we're focused on hanging out and having fun. We don't have skill/rank/level requirements for any games we play, and we never will. However, we take new memberships pretty seriously. We're a small group that takes pride in taking time to curate members who will help keep our community chill, healthy, and active. That being said, we believe you would be a valuable part of The Slambonis. We can't wait to get you on the path of \"slammin' with the fam!\"\n\n\u200b"
 
         rules_embeds = [
-            naff.Embed(
+            Embed(
                 title="😍 Treat one another with love and respect",
                 description="No one likes a jerk. Keep the chat clean and don't be using slurs/insults or any other form of harassment. We're all here to have fun, and we're all here to be ourselves.",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="🔞 Keep it PG-18",
                 description="No porn, no gore, and no fucked up videos. We are all for the memes, but watch what you post.",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="🧌 No trolling",
                 description="Dont join just to cause a ruckus. We're here to get away from all that jazz.",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="📵 No DM Harassment",
                 description="Do not DM someone without their permission and do not harrass them. (If you are being harassed, please report it to a moderator.)",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="📢 No Promoting",
                 description="Don't come in here to then just post your links without being an active member. We are ok with people sharing cool clips they get in game, but not just posting them and never being active.",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="👮 Follow Discord TOS",
                 description="It is required that you follow [Discord's TOS](<https://discord.com/terms>).",
                 color="#1e99d7",
             ),
-            naff.Embed(
+            Embed(
                 title="ℹ️ One more thing...",
                 description="We take the time to really curate our members so you will gain a recruitment role for about 1-2 weeks (depending on activity) to help us get to know you and vice versa. This will help us learn if we are a good fit together!",
                 color="#1e99d7",
             ),
         ]
-        button = naff.Button(
-            naff.ButtonStyles.BLUE, label="I agree to these rules", custom_id="rules"
+        button = Button(
+            style=Button.Styles.BLUE, label="I agree to these rules", custom_id="rules"
         )
         await channel.send(content=welcome, embeds=rules_embeds, components=button)
         await ctx.send("Sent to: " + channel.mention, ephemeral=True)
 
-    @naff.listen(naff.events.ButtonPressed)
-    async def toggle_accepted_rules(self, event: naff.events.ButtonPressed) -> None:
+    @listen(events.ButtonPressed)
+    async def toggle_accepted_rules(self, event: events.ButtonPressed) -> None:
         ctx = event.ctx
-        recruitment_role = await ctx.guild.fetch_role(
-            int(get_key(".env", "RECRUIT_ROLE"))
-        )
-        slamboni_role = await ctx.guild.fetch_role(int(get_key(".env", "SLAM_ROLE")))
+        if ctx.custom_id != "rules":
+            return
+
+        recruitment_role = await ctx.guild.fetch_role(config.roles.recruit)
+        slamboni_role = await ctx.guild.fetch_role(config.roles.slam)
         if (
             recruitment_role not in ctx.author.roles
             and slamboni_role not in ctx.author.roles
@@ -120,99 +145,91 @@ class Admin(naff.Extension):
         sub_cmd_description="Post manage roles message",
         group_name="post",
     )
-    @naff.slash_option(
+    @slash_option(
         name="channel",
         description="Channel to post roles to",
-        opt_type=naff.OptionTypes.CHANNEL,
-        channel_types=[naff.ChannelTypes.GUILD_TEXT],
+        opt_type=OptionType.CHANNEL,
+        channel_types=[ChannelType.GUILD_TEXT],
         required=True,
     )
-    async def post_roles(
-        self, ctx: naff.InteractionContext, channel: naff.GuildText
-    ) -> None:
+    async def post_roles(self, ctx: SlashContext, channel: GuildText) -> None:
         content = "Welcome to the locker room! Go ahead and grab your gear and get ready to play some games. We have a few roles you can add to yourself to help us get to know you better. If you have any questions, feel free to ask a moderator or admin. We're here to help!\n\n\u200b"
 
-        switch = naff.StringSelectMenu(
-            options=[
-                naff.SelectOption(
-                    label="PC",
-                    value="pc",
-                    emoji="<:pc:1046642402850517012>",
-                ),
-                naff.SelectOption(
-                    label="Xbox",
-                    value="xbox",
-                    emoji="<:xbox:1046634053840941106>",
-                ),
-                naff.SelectOption(
-                    label="Playstation",
-                    value="playstation",
-                    emoji="<:playstation:1046634875677048842>",
-                ),
-                naff.SelectOption(
-                    label="Switch",
-                    value="switch",
-                    emoji="<:nintendo:1046634892940812348>",
-                ),
-            ],
+        switch = StringSelectMenu(
+            StringSelectOption(
+                label="PC",
+                value="pc",
+                emoji="<:pc:1046642402850517012>",
+            ),
+            StringSelectOption(
+                label="Xbox",
+                value="xbox",
+                emoji="<:xbox:1046634053840941106>",
+            ),
+            StringSelectOption(
+                label="Playstation",
+                value="playstation",
+                emoji="<:playstation:1046634875677048842>",
+            ),
+            StringSelectOption(
+                label="Switch",
+                value="switch",
+                emoji="<:nintendo:1046634892940812348>",
+            ),
             placeholder="Select your platform(s)",
             min_values=1,
             max_values=4,
             custom_id="platform_select",
         )
 
-        games = naff.StringSelectMenu(
-            options=[
-                naff.SelectOption(
-                    label="Fortnite",
-                    value="fortnite",
-                    emoji="<:fortnite:1046642116186619997>",
-                ),
-                naff.SelectOption(
-                    label="Hunt Showdown",
-                    value="huntshowdown",
-                    emoji="<:huntshowdown:1046642115171590177>",
-                ),
-                naff.SelectOption(
-                    label="Minecraft",
-                    value="minecraft",
-                    emoji="<:minecraft:1046642117390372924>",
-                ),
-                naff.SelectOption(
-                    label="Rocket League",
-                    value="rocketleague",
-                    emoji="<:rocketleague:1046642118300545114>",
-                ),
-            ],
+        games = StringSelectMenu(
+            StringSelectOption(
+                label="Fortnite",
+                value="fortnite",
+                emoji="<:fortnite:1046642116186619997>",
+            ),
+            StringSelectOption(
+                label="Hunt Showdown",
+                value="huntshowdown",
+                emoji="<:huntshowdown:1046642115171590177>",
+            ),
+            StringSelectOption(
+                label="Minecraft",
+                value="minecraft",
+                emoji="<:minecraft:1046642117390372924>",
+            ),
+            StringSelectOption(
+                label="Rocket League",
+                value="rocketleague",
+                emoji="<:rocketleague:1046642118300545114>",
+            ),
             placeholder="Select your game(s)",
             min_values=1,
             max_values=4,
             custom_id="game_select",
         )
 
-        regions = naff.StringSelectMenu(
-            options=[
-                naff.SelectOption(
-                    label="US West",
-                    value="uswest",
-                ),
-                naff.SelectOption(
-                    label="US Central",
-                    value="uscentral",
-                ),
-                naff.SelectOption(
-                    label="US East",
-                    value="useast",
-                ),
-                naff.SelectOption(
-                    label="Europe",
-                    value="eu",
-                ),
-                naff.SelectOption(
-                    label="Asia",
-                    value="asia",
-                ),
-            ],
+        regions = StringSelectMenu(
+            StringSelectOption(
+                label="US West",
+                value="uswest",
+            ),
+            StringSelectOption(
+                label="US Central",
+                value="uscentral",
+            ),
+            StringSelectOption(
+                label="US East",
+                value="useast",
+            ),
+            StringSelectOption(
+                label="Europe",
+                value="eu",
+            ),
+            StringSelectOption(
+                label="Asia",
+                value="asia",
+            ),
             placeholder="Select your region",
             min_values=1,
             max_values=1,
@@ -225,7 +242,7 @@ class Admin(naff.Extension):
         )
         await ctx.send("Sent to: " + channel.mention, ephemeral=True)
 
-    async def toggle_custom_roles(self, ctx: naff.ComponentContext, roles: dict):
+    async def toggle_custom_roles(self, ctx: ComponentContext, roles: dict):
         _roles = roles
 
         local_author_roles = [role.id for role in ctx.author.roles]
@@ -240,8 +257,8 @@ class Admin(naff.Extension):
         await ctx.author.edit(roles=local_author_roles)
         await ctx.send("Roles updated!", ephemeral=True)
 
-    @naff.listen(naff.events.Select)
-    async def toggle_roles(self, event: naff.events.Select) -> None:
+    @listen(events.Select)
+    async def toggle_roles(self, event: events.Select):
         ctx = event.ctx
         if ctx.custom_id == "platform_select":
             await self.toggle_custom_roles(ctx, self.platform_roles)
@@ -250,6 +267,10 @@ class Admin(naff.Extension):
         elif ctx.custom_id == "region_select":
             await self.toggle_custom_roles(ctx, self.region_roles)
 
+    @listen(events.Startup)
+    async def startup(self) -> None:
+        logger.info("Online")
 
-def setup(bot: naff.Client):
+
+def setup(bot: Client):
     Admin(bot)

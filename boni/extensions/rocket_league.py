@@ -1,11 +1,15 @@
-import naff
+from interactions import (
+    Extension,
+    Client,
+)
 
-class RocketLeague(naff.Extension):
-    def __init__(self, bot: naff.Client):
-        self.bot: naff.Client = bot
+
+class RocketLeague(Extension):
+    def __init__(self, bot: Client):
+        self.bot: Client = bot
 
     ...
 
 
-def setup(bot: naff.Client):
+def setup(bot: Client):
     RocketLeague(bot)

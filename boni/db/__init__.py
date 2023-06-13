@@ -3,14 +3,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from boni.db.models import __beanie_models__
 
 
-CLIENT = None
-BONIDB = None
-
-
-async def init(host: str, username: str, password: str, port: int) -> None:
-    global CLIENT, BONIDB
-    CLIENT = AsyncIOMotorClient(
-        host=host, port=port, username=username, password=password, authSource="boni"
-    )
-    BONIDB = CLIENT.boni
-    await init_beanie(database=BONIDB, document_models=__beanie_models__)
+async def init(host: str, database: str, port: int = 27017, user: str = None, password: str = None, models: list = None):
+    client = AsyncIOMotorClient(username=user, password=password, host=host, port=port)
+    await init_beanie(database=client[database], document_models=models or __beanie_models__)

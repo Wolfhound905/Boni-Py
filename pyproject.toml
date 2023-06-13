@@ -6,13 +6,11 @@ authors = ["Wolfhound905 <aiden8green@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 python-dotenv = "^0.20.0"
 beanie = "^1.11.0"
-# To force update to latest
-# "poetry add git+https://github.com/NAFTeam/NAFF.git@dev"
-naff = {git = "https://github.com/NAFTeam/NAFF.git", rev = "dev"}
 orjson = "^3.8.2"
+interactions-py = "^5.6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
